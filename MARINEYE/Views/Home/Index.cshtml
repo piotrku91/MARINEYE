@@ -1,0 +1,22 @@
+﻿@using MARINEYE.Areas.Identity.Data
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<MARINEYEUser> SignInManager
+@inject UserManager<MARINEYEUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+<h1 class="display-4">WITAMY</h1>
+@if (User.IsInRole(Constants.MainAdminRole)) 
+{
+    <p>Witaj adminie!</p>
+}
+else if (User.IsInRole("Boatswain") || User.IsInRole("Member")) {
+    <p>Witaj klubowiczu!</p>
+} else {
+    <p>Witaj przybyszu!</p>
+}
+</div>
