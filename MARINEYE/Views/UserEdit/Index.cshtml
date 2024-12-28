@@ -17,7 +17,11 @@
              @if (User.IsInRole(Constants.MainAdminRole))
                 {
             <th>Actions</th>
+                } else {
+                    <th></th>
                 }
+                <th></th>
+               
         </tr>
     </thead>
     <tbody>
@@ -38,6 +42,24 @@
                                 Delete
                             </button>
                         </form>
+                    </td>
+                } else {
+                    <td></td>
+                }
+
+                @if (user.Role == "Extern")
+                {
+                    <td>
+                        <span class="badge bg-info">NIE DOTYCZY</span>
+                    </td>
+                } else if (user.AllDuesPaid) {
+                    <td>
+                        <span class="badge bg-success">OK</span>
+                    </td>
+                } else
+                {
+                    <td>
+                        <span class="badge bg-danger">PROBLEM</span>
                     </td>
                 }
             </tr>

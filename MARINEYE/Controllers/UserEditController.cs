@@ -96,6 +96,30 @@ namespace MARINEYE.Controllers
             })
             .ToListAsync();
 
+            // For each user, check if all their dues are paid
+            foreach (var userWithRole in usersWithRoles) {
+                // Get all the dues for the user, whether paid or not
+                var userDues = await _context.ClubDueModel.ToListAsync();
+
+                // Check if the user has paid all dues
+                bool allPaid = true;
+
+                foreach (var due in userDues) {
+                    var userTransaction = await _context.DueTransactions
+                        .Where(dt => dt.UserId == userWithRole.Id && dt.ClubDueId == due.Id)
+                        .FirstOrDefaultAsync();
+
+                    // If there's no transaction or the payment amount is less than the due amount, mark as not paid
+                    if (userTransaction == null || userTransaction.AmountPaid < due.Amount) {
+                        allPaid = false;
+                        break;
+                    }
+                }
+
+                // Store the status indicating whether all dues are paid
+                userWithRole.AllDuesPaid = allPaid;
+            }
+
             return View(usersWithRoles);
         }
 
