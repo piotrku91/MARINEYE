@@ -12,11 +12,11 @@ using MARINEYE.Utilities;
 
 namespace MARINEYE.Controllers
 {
-    public class BoatModelsController : Controller
+    public class BoatsController : Controller
     {
         private readonly MARINEYEContext _context;
 
-        public BoatModelsController(MARINEYEContext context)
+        public BoatsController(MARINEYEContext context)
         {
             _context = context;
         }
