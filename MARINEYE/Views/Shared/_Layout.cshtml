@@ -27,8 +27,16 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Główna</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="BoatModels" asp-action="Index">Flota</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Boats" asp-action="Index">Flota</a>
                         </li>
+
+                        @if (User.Identity.IsAuthenticated || !User.IsInRole("Extern"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="ClubDues" asp-action="Index">Opłaty członkowskie</a>
+                            </li>
+                        }
+
                         @if (User.IsInRole("Admin") || User.IsInRole("Boatswain"))
                         {
                             <li class="nav-item">

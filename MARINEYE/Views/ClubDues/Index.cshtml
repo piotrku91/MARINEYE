@@ -1,0 +1,63 @@
+﻿@model IEnumerable<MARINEYE.Models.ClubDueModel>
+@using MARINEYE.Areas.Identity.Data
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MARINEYEUser> SignInManager
+@inject UserManager<MARINEYEUser> UserManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PeriodBegin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PeriodEnd)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                {
+            <th>Actions</th>
+                }
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PeriodBegin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PeriodEnd)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+                @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                }
+        </tr>
+}
+    </tbody>
+</table>

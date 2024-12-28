@@ -6,6 +6,8 @@
         public const string DefaultRole = "Extern";
         public const string UserListAccessRoles = Constants.MainAdminRole + "," + "Boatswain";
         public const string EditBoatListAccessRoles = Constants.MainAdminRole + "," + "Boatswain";
+        public const string EditClubDuesRoles = Constants.MainAdminRole + "," + "Boatswain";
+
         public readonly static List<string> Roles = new List<string> { MainAdminRole, "Boatswain", "Member", DefaultRole };
     }
 }

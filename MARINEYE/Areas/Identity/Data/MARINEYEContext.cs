@@ -18,4 +18,6 @@ public class MARINEYEContext : IdentityDbContext<MARINEYEUser>
 public DbSet<MARINEYE.Models.EditableUserModel> EditableUserModel { get; set; } = default!;
 
 public DbSet<MARINEYE.Models.BoatModel> BoatModel { get; set; } = default!;
+
+public DbSet<MARINEYE.Models.ClubDueModel> ClubDueModel { get; set; } = default!;
 }
