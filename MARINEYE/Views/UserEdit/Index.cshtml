@@ -10,10 +10,14 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Email</th>
-            <th>First Name</th>
-            <th>Last Name</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstName)</th>
+            <th>@Html.DisplayNameFor(model => model.LastName)</th>
+            <th>@Html.DisplayNameFor(model => model.Role)</th>
+             @if (User.IsInRole(Constants.MainAdminRole))
+                {
             <th>Actions</th>
+                }
         </tr>
     </thead>
     <tbody>
@@ -23,6 +27,7 @@
                 <td>@user.Email</td>
                 <td>@user.FirstName</td>
                 <td>@user.LastName</td>
+                <td>@user.Role</td>
                 @if (User.IsInRole(Constants.MainAdminRole))
                 {
                     <td>

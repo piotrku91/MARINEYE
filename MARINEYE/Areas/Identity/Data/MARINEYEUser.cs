@@ -16,5 +16,6 @@ public class MARINEYEUser : IdentityUser
 
     [PersonalData]
     public DateTime DOB { get; set; }
+
 }
 

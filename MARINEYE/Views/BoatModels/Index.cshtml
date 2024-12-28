@@ -1,0 +1,77 @@
+﻿@model IEnumerable<MARINEYE.Models.BoatModel>
+@using MARINEYE.Areas.Identity.Data
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MARINEYEUser> SignInManager
+@inject UserManager<MARINEYEUser> UserManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+@if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+            {
+                <p>
+                    <a asp-action="Create">Create New</a>
+                </p>
+            }
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Length)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Year)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImageName)
+            </th>
+            @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+            {
+                <th>Actions</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Length)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                    <img src="/boatsviews/@Html.DisplayFor(modelItem => item.ImageName)" width="128" height="128"/>
+            </td>
+                @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                {
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+                }
+        </tr>
+}
+    </tbody>
+</table>

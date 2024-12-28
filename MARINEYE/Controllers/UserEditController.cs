@@ -12,10 +12,12 @@ namespace MARINEYE.Controllers
 {
     public class UserEditController : Controller
     {
+        private readonly MARINEYEContext _context;
         private readonly UserManager<MARINEYEUser> _userManager;
 
-        public UserEditController(UserManager<MARINEYEUser> userManager)
+        public UserEditController(MARINEYEContext context, UserManager<MARINEYEUser> userManager)
         {
+            _context = context;
             _userManager = userManager;
         }
 
@@ -74,16 +76,27 @@ namespace MARINEYE.Controllers
         [Authorize(Roles = Constants.UserListAccessRoles)]
         public async Task<IActionResult> Index()
         {
-            var users = _userManager.Users
-            .Select(user => new EditableUserModel {
-                Id = user.Id,
-                Email = user.Email,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            })
-            .ToList();
+            var usersWithRoles = await _context.Users
 
-            return View(users);
+            .Join(_context.UserRoles,
+            user => user.Id,
+            userRole => userRole.UserId,
+            (user, userRole) => new { user, userRole })
+
+            .Join(_context.Roles,
+            userWithRole => userWithRole.userRole.RoleId,
+            role => role.Id,
+
+            (userWithRole, role) => new EditableUserModel {
+            Id = userWithRole.user.Id,
+            Email = userWithRole.user.Email,
+            FirstName = userWithRole.user.FirstName,
+            LastName = userWithRole.user.LastName,
+            Role = role.Name 
+            })
+            .ToListAsync();
+
+            return View(usersWithRoles);
         }
 
         // GET: Users/Edit/{id}
@@ -98,7 +111,7 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
 
-            var userRole = FindRole(user);
+            var userRole = await FindRole(user);
 
             // Create a model or directly pass user to the view
             var model = new EditableUserModel {
@@ -106,7 +119,7 @@ namespace MARINEYE.Controllers
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Role = await userRole
+                Role = userRole
             };
 
             ViewData["AvailableRoles"] = new SelectList(Constants.Roles, userRole);
