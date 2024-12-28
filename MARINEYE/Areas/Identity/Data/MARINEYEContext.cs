@@ -20,4 +20,6 @@ public DbSet<MARINEYE.Models.EditableUserModel> EditableUserModel { get; set; } 
 public DbSet<MARINEYE.Models.BoatModel> BoatModel { get; set; } = default!;
 
 public DbSet<MARINEYE.Models.ClubDueModel> ClubDueModel { get; set; } = default!;
+
+public DbSet<DueTransaction> DueTransactions { get; set; }
 }

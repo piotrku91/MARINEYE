@@ -30,7 +30,7 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Boats" asp-action="Index">Flota</a>
                         </li>
 
-                        @if (User.Identity.IsAuthenticated || !User.IsInRole("Extern"))
+                        @if (User.Identity.IsAuthenticated && !User.IsInRole("Extern"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="ClubDues" asp-action="Index">Opłaty członkowskie</a>

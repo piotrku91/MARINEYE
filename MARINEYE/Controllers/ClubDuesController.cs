@@ -8,22 +8,45 @@ using Microsoft.EntityFrameworkCore;
 using MARINEYE.Areas.Identity.Data;
 using MARINEYE.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace MARINEYE.Controllers
 {
     public class ClubDuesController : Controller
     {
         private readonly MARINEYEContext _context;
+        private readonly UserManager<MARINEYEUser> _userManager;
 
-        public ClubDuesController(MARINEYEContext context)
+        public ClubDuesController(MARINEYEContext context, UserManager<MARINEYEUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: ClubDues
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.ClubDueModel.ToListAsync());
+        public async Task<IActionResult> Index() {
+            // Retrieve the current logged-in user
+            var userId = User.Identity.Name; // or User.FindFirstValue(ClaimTypes.NameIdentifier) depending on how user id is stored
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+
+            if (currentUser == null) {
+                return Unauthorized();
+            }
+
+            // Retrieve all ClubDueModel records
+            var clubDueModels = await _context.ClubDueModel.ToListAsync();
+
+            // For each ClubDueModel, check if the user has already paid
+            foreach (var clubDueModel in clubDueModels) {
+                // Check if there's a transaction for the current user for this particular ClubDue
+                var paid = await _context.DueTransactions
+                    .AnyAsync(dt => dt.UserId == currentUser.Id && dt.ClubDueId == clubDueModel.Id && dt.AmountPaid >= clubDueModel.Amount);
+
+                // Store the paid status in ViewData for each ClubDueModel
+                ViewData[$"Paid_{clubDueModel.Id}"] = paid;
+            }
+
+            return View(clubDueModels);
         }
 
         // GET: ClubDues/Create
@@ -64,6 +87,47 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
             return View(clubDueModel);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> Pay(int? id) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var clubDueModel = await _context.ClubDueModel.FindAsync(id);
+            if (clubDueModel == null) {
+                return NotFound();
+            }
+
+            var userId = User.Identity.Name; 
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId); 
+
+            if (currentUser == null) {
+                return Unauthorized();
+            }
+
+            if (currentUser.CashAmount < clubDueModel.Amount) {
+                return RedirectToAction(nameof(Index));
+            } else {
+                currentUser.CashAmount = currentUser.CashAmount - clubDueModel.Amount;
+                var result = await _userManager.UpdateAsync(currentUser);
+            }
+
+            // Create a new DueTransaction
+            var dueTransaction = new DueTransaction {
+                UserId = currentUser.Id,
+                ClubDueId = clubDueModel.Id, 
+                AmountPaid = clubDueModel.Amount, 
+                PaymentDate = DateTime.Now, 
+            };
+
+            _context.DueTransactions.Add(dueTransaction);
+
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: ClubDues/Edit/5

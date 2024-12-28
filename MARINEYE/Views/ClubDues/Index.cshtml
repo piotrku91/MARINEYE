@@ -28,10 +28,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Amount)
             </th>
-            @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
-                {
+           
             <th>Actions</th>
-                }
+            <th>PaymentStatus</th>
+            
         </tr>
     </thead>
     <tbody>
@@ -55,6 +55,22 @@
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                } else {
+                    <td></td>
+                }
+
+                @if (ViewData[$"Paid_{item.Id}"] != null && (bool)ViewData[$"Paid_{item.Id}"])
+                {
+                    <td>
+                    <span class="badge bg-success">Opłacono</span>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                    <a asp-action="Pay" asp-route-id="@item.Id">Zapłać teraz</a>
+                    <span class="badge bg-danger">Nie opłacono</span>
                     </td>
                 }
         </tr>
