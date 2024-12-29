@@ -49,7 +49,7 @@ namespace MARINEYE.Controllers
         [Authorize(Roles = Constants.EditBoatListAccessRoles)]
         public IActionResult Create()
         {
-            BoatState defaultState = BoatState.Free;
+            BoatState defaultState = BoatState.Operational;
             ViewData["State"] = new SelectList(BoatStateUtils.GetBoatStateAllStrings(), BoatStateUtils.GetBoatStateString(defaultState));
             return View();
         }

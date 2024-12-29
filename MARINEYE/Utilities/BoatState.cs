@@ -2,10 +2,7 @@
 {
     public enum BoatState
     {
-        Free,
-        Reserved,
-        Rented,
-        InternalUse,
+        Operational,
         Repair
     }
 

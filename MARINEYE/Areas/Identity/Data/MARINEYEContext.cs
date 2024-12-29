@@ -22,4 +22,6 @@ public DbSet<MARINEYE.Models.BoatModel> BoatModel { get; set; } = default!;
 public DbSet<MARINEYE.Models.ClubDueModel> ClubDueModel { get; set; } = default!;
 
 public DbSet<DueTransactionModel> DueTransactions { get; set; }
+
+public DbSet<MARINEYE.Models.BoatCalendarEventModel> BoatCalendarEventModel { get; set; } = default!;
 }
