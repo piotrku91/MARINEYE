@@ -1,4 +1,4 @@
-﻿@model MARINEYE.Models.BoatCalendarEventModel
+﻿@model MARINEYE.Models.BoatCalendarEvent
 
 @{
     ViewData["Title"] = "Delete";
@@ -24,22 +24,10 @@
             @Html.DisplayFor(model => model.EndDate)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.User)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.User.Id)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Boat)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Boat.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EventState)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EventState)
         </dd>
     </dl>
     

@@ -26,31 +26,11 @@ namespace MARINEYE.Controllers
             return View(await mARINEYEContext.ToListAsync());
         }
 
-        // GET: BoatCalendarEvents/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var boatCalendarEventModel = await _context.BoatCalendarEventModel
-                .Include(b => b.Boat)
-                .Include(b => b.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (boatCalendarEventModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(boatCalendarEventModel);
-        }
 
         // GET: BoatCalendarEvents/Create
         public IActionResult Create()
         {
-            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Id");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
+            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name");
             return View();
         }
 
@@ -59,112 +39,37 @@ namespace MARINEYE.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BeginDate,EndDate,UserId,BoatId,EventState")] BoatCalendarEventModel boatCalendarEventModel)
+        public async Task<IActionResult> Create([Bind("Id,BeginDate,EndDate,BoatId")] BoatCalendarEventDTO boatCalendarEventDTO)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(boatCalendarEventModel);
+                BoatCalendarEvent boatCalendarEvent = new BoatCalendarEvent();
+                boatCalendarEvent.Id = boatCalendarEventDTO.Id;
+                boatCalendarEvent.BeginDate = boatCalendarEventDTO.BeginDate;
+                boatCalendarEvent.EndDate = boatCalendarEventDTO.EndDate;
+                boatCalendarEvent.BoatId = boatCalendarEventDTO.BoatId;
+                var userId = User.Identity.Name; // or User.FindFirstValue(ClaimTypes.NameIdentifier) depending on how user id is stored
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+                boatCalendarEvent.UserId = userId;
+                boatCalendarEvent.User = currentUser;
+                boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Reserved;
+
+                _context.Add(boatCalendarEvent);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Id", boatCalendarEventModel.BoatId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", boatCalendarEventModel.UserId);
-            return View(boatCalendarEventModel);
-        }
 
-        // GET: BoatCalendarEvents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var boatCalendarEventModel = await _context.BoatCalendarEventModel.FindAsync(id);
-            if (boatCalendarEventModel == null)
-            {
-                return NotFound();
-            }
-            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Id", boatCalendarEventModel.BoatId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", boatCalendarEventModel.UserId);
-            return View(boatCalendarEventModel);
-        }
-
-        // POST: BoatCalendarEvents/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,BeginDate,EndDate,UserId,BoatId,EventState")] BoatCalendarEventModel boatCalendarEventModel)
-        {
-            if (id != boatCalendarEventModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(boatCalendarEventModel);
-                    await _context.SaveChangesAsync();
+            if (!ModelState.IsValid) {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors) {
+                    Console.WriteLine(error.ErrorMessage);
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!BoatCalendarEventModelExists(boatCalendarEventModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Id", boatCalendarEventModel.BoatId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", boatCalendarEventModel.UserId);
-            return View(boatCalendarEventModel);
-        }
-
-        // GET: BoatCalendarEvents/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+   
             }
 
-            var boatCalendarEventModel = await _context.BoatCalendarEventModel
-                .Include(b => b.Boat)
-                .Include(b => b.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (boatCalendarEventModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(boatCalendarEventModel);
+            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name", boatCalendarEventDTO.BoatId);
+            return View(boatCalendarEventDTO);
         }
 
-        // POST: BoatCalendarEvents/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var boatCalendarEventModel = await _context.BoatCalendarEventModel.FindAsync(id);
-            if (boatCalendarEventModel != null)
-            {
-                _context.BoatCalendarEventModel.Remove(boatCalendarEventModel);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool BoatCalendarEventModelExists(int id)
-        {
-            return _context.BoatCalendarEventModel.Any(e => e.Id == id);
-        }
     }
 }
