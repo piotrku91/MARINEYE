@@ -4,7 +4,7 @@ using MARINEYE.Areas.Identity.Data;
 
 namespace MARINEYE.Models
 {
-    public class DueTransaction
+    public class DueTransactionModel
     {
         [Key]
         public int Id { get; set; }

@@ -115,7 +115,7 @@ namespace MARINEYE.Controllers
             }
 
             // Create a new DueTransaction
-            var dueTransaction = new DueTransaction {
+            var dueTransaction = new DueTransactionModel {
                 UserId = currentUser.Id,
                 ClubDueId = clubDueModel.Id, 
                 AmountPaid = clubDueModel.Amount, 
@@ -189,17 +189,31 @@ namespace MARINEYE.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Constants.EditClubDuesRoles)]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            // Find the ClubDue record
             var clubDueModel = await _context.ClubDueModel.FindAsync(id);
-            if (clubDueModel != null)
-            {
-                _context.ClubDueModel.Remove(clubDueModel);
+
+            if (clubDueModel == null) {
+                return NotFound();
             }
 
+            // Check if there are linked transactions
+            var hasLinkedTransactions = await _context.DueTransactions
+                .AnyAsync(dt => dt.ClubDueId == clubDueModel.Id);
+
+            if (hasLinkedTransactions) {
+                // Inform the user that the ClubDue cannot be deleted
+                TempData["Error"] = "Nie można usunąć. Najpierw cofnij powiązane transakcje.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // If no linked transactions, proceed with deletion
+            _context.ClubDueModel.Remove(clubDueModel);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ClubDueModelExists(int id)
         {
