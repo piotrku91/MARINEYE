@@ -28,7 +28,8 @@ namespace MARINEYE.Controllers
         }
 
         // GET: BoatModels/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Authorize]
+        public async Task<IActionResult> Report(int? id)
         {
             if (id == null)
             {
@@ -42,7 +43,12 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
 
-            return View(boatModel);
+            boatModel.State = BoatState.Repair;
+
+            _context.Update(boatModel);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: BoatModels/Create
@@ -151,6 +157,15 @@ namespace MARINEYE.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var boatModel = await _context.BoatModel.FindAsync(id);
+
+            bool isBoatReserved = await _context.BoatCalendarEventModel
+                .AnyAsync(e => e.BoatId == id && e.BeginDate <= DateTime.Now && e.EndDate >= DateTime.Now);
+
+            if (isBoatReserved) {
+                TempData["Error"] = "Łódź jest obecnie zarezerwowana i nie można jej usunąć. Rozwiąż wszystkie rezerwację a potem spróbuj ponownie.";
+                return RedirectToAction(nameof(Index));
+            }
+
             if (boatModel != null)
             {
                 _context.BoatModel.Remove(boatModel);

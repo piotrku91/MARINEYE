@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<MARINEYE.Models.BoatModel>
 @using MARINEYE.Areas.Identity.Data
+@using MARINEYE.Utilities
 @using Microsoft.AspNetCore.Identity
 @inject SignInManager<MARINEYEUser> SignInManager
 @inject UserManager<MARINEYEUser> UserManager
@@ -15,6 +16,13 @@
                     <a asp-action="Create">Create New</a>
                 </p>
             }
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 <table class="table">
     <thead>
         <tr>
@@ -63,14 +71,21 @@
             <td>
                     <img src="/boatsviews/@Html.DisplayFor(modelItem => item.ImageName)" width="128" height="128"/>
             </td>
+
                 @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
                 {
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Szczegóły</a> |
+                <a asp-action="Report" asp-route-id="@item.Id">Zgłoś problem |</a>
                 <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
             </td>
+                } else if (User.Identity.IsAuthenticated && item.State != BoatState.Repair)
+                {
+                    <td>
+                        <a asp-action="Report" asp-route-id="@item.Id">Zgłoś problem</a> 
+                    </td>
                 }
+                
         </tr>
 }
     </tbody>

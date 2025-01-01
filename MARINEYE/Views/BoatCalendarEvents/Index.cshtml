@@ -9,6 +9,14 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -19,10 +27,10 @@
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User)
+                @Html.DisplayNameFor(model => model.User.FirstName) / @Html.DisplayNameFor(model => model.User.FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Boat)
+                @Html.DisplayNameFor(model => model.Boat.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.EventState)
@@ -40,10 +48,10 @@
                 @Html.DisplayFor(modelItem => item.EndDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Id)
+                @Html.DisplayFor(modelItem => item.User.FirstName) @Html.DisplayFor(modelItem => item.User.LastName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Boat.Id)
+                @Html.DisplayFor(modelItem => item.Boat.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EventState)

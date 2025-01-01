@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MARINEYE.Areas.Identity.Data;
 using MARINEYE.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MARINEYE.Controllers
 {
+    [Authorize]
     public class BoatCalendarEventsController : Controller
     {
         private readonly MARINEYEContext _context;
@@ -41,30 +43,43 @@ namespace MARINEYE.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,BeginDate,EndDate,BoatId")] BoatCalendarEventDTO boatCalendarEventDTO)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid) {
                 BoatCalendarEvent boatCalendarEvent = new BoatCalendarEvent();
                 boatCalendarEvent.Id = boatCalendarEventDTO.Id;
                 boatCalendarEvent.BeginDate = boatCalendarEventDTO.BeginDate;
                 boatCalendarEvent.EndDate = boatCalendarEventDTO.EndDate;
                 boatCalendarEvent.BoatId = boatCalendarEventDTO.BoatId;
-                var userId = User.Identity.Name; // or User.FindFirstValue(ClaimTypes.NameIdentifier) depending on how user id is stored
+                boatCalendarEvent.Boat = _context.BoatModel.FirstOrDefault(b => b.Id == boatCalendarEvent.BoatId);
+                var userId = User.Identity.Name;
                 var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
                 boatCalendarEvent.UserId = userId;
                 boatCalendarEvent.User = currentUser;
                 boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Reserved;
 
+                if (boatCalendarEvent.Boat == null) {
+                    return View(boatCalendarEventDTO);
+                }
+
+                if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
+                    TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var existingReservation = await _context.BoatCalendarEventModel
+                    .Where(b => b.BoatId == boatCalendarEvent.BoatId &&
+                                ((boatCalendarEvent.BeginDate >= b.BeginDate && boatCalendarEvent.BeginDate < b.EndDate) ||
+                                 (boatCalendarEvent.EndDate > b.BeginDate && boatCalendarEvent.EndDate <= b.EndDate)))
+                    .FirstOrDefaultAsync();
+
+                if (existingReservation != null) {
+                    TempData["Error"] = "Wybrany termin jest już zajęty. Wybierz inny.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Dodanie nowej rezerwacji, jeśli termin jest wolny
                 _context.Add(boatCalendarEvent);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-
-            if (!ModelState.IsValid) {
-                var errors = ModelState.Values.SelectMany(v => v.Errors);
-                foreach (var error in errors) {
-                    Console.WriteLine(error.ErrorMessage);
-                }
-   
             }
 
             ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name", boatCalendarEventDTO.BoatId);
