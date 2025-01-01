@@ -28,12 +28,73 @@ namespace MARINEYE.Controllers
             return View(await mARINEYEContext.ToListAsync());
         }
 
+        private async Task<bool> ReservationExists(BoatCalendarEvent boatCalendarEvent) {
+            var existingReservation = await _context.BoatCalendarEventModel
+                    .Where(b => b.BoatId == boatCalendarEvent.BoatId &&
+                                ((boatCalendarEvent.BeginDate >= b.BeginDate && boatCalendarEvent.BeginDate < b.EndDate) ||
+                                 (boatCalendarEvent.EndDate > b.BeginDate && boatCalendarEvent.EndDate <= b.EndDate)))
+                    .FirstOrDefaultAsync();
+
+            return existingReservation != null;
+        }
 
         // GET: BoatCalendarEvents/Create
         public IActionResult Create()
         {
             ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name");
             return View();
+        }
+
+        // GET: BoatCalendarEvents/Confirm
+        [Authorize(Roles = Constants.EditBoatListAccessRoles)]
+        public async Task<IActionResult> Confirm(int? id) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var boatCalendarEvent = await _context.BoatCalendarEventModel
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (boatCalendarEvent == null) {
+                return NotFound();
+            }
+
+            boatCalendarEvent.Boat = _context.BoatModel.FirstOrDefault(b => b.Id == boatCalendarEvent.BoatId);
+
+            if (boatCalendarEvent.Boat == null) {
+                return NotFound();
+            }
+
+            if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
+                TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var userId = User.Identity.Name;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+
+            if (currentUser == null) {
+                return Unauthorized();
+            }
+
+            var clubDueModels = await _context.ClubDueModel.ToListAsync();
+
+            var paid = true;
+            foreach (var clubDueModel in clubDueModels) {
+                paid = paid && await _context.DueTransactions
+                    .AnyAsync(dt => dt.UserId == currentUser.Id && dt.ClubDueId == clubDueModel.Id && dt.AmountPaid >= clubDueModel.Amount);
+            }
+
+            if (!paid) {
+                TempData["Error"] = "Nie można potwierdzić rezerwacji. Prawdopodobnie użytkownik ma zaległe składki do opłacenia.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Confirmed;
+            _context.Update(boatCalendarEvent);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
 
         // POST: BoatCalendarEvents/Create
@@ -57,21 +118,15 @@ namespace MARINEYE.Controllers
                 boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Reserved;
 
                 if (boatCalendarEvent.Boat == null) {
-                    return View(boatCalendarEventDTO);
+                    return NotFound();
                 }
 
                 if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
                     TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
                     return RedirectToAction(nameof(Index));
                 }
-
-                var existingReservation = await _context.BoatCalendarEventModel
-                    .Where(b => b.BoatId == boatCalendarEvent.BoatId &&
-                                ((boatCalendarEvent.BeginDate >= b.BeginDate && boatCalendarEvent.BeginDate < b.EndDate) ||
-                                 (boatCalendarEvent.EndDate > b.BeginDate && boatCalendarEvent.EndDate <= b.EndDate)))
-                    .FirstOrDefaultAsync();
-
-                if (existingReservation != null) {
+                
+                if (await ReservationExists(boatCalendarEvent)) {
                     TempData["Error"] = "Wybrany termin jest już zajęty. Wybierz inny.";
                     return RedirectToAction(nameof(Index));
                 }
