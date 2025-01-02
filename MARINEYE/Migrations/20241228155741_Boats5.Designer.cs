@@ -4,6 +4,7 @@ using MARINEYE.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MARINEYE.Migrations
 {
     [DbContext(typeof(MARINEYEContext))]
-    partial class MARINEYEContextModelSnapshot : ModelSnapshot
+    [Migration("20241228155741_Boats5")]
+    partial class Boats5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +31,6 @@ namespace MARINEYE.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CashAmount")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -99,39 +99,6 @@ namespace MARINEYE.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("MARINEYE.Models.BoatCalendarEventModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("BeginDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("BoatId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("EventState")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoatId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BoatCalendarEventModel");
-                });
-
             modelBuilder.Entity("MARINEYE.Models.BoatModel", b =>
                 {
                     b.Property<int>("Id")
@@ -189,36 +156,6 @@ namespace MARINEYE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ClubDueModel");
-                });
-
-            modelBuilder.Entity("MARINEYE.Models.DueTransactionModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AmountPaid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ClubDueId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClubDueId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DueTransactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -356,44 +293,6 @@ namespace MARINEYE.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("MARINEYE.Models.BoatCalendarEventModel", b =>
-                {
-                    b.HasOne("MARINEYE.Models.BoatModel", "Boat")
-                        .WithMany()
-                        .HasForeignKey("BoatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MARINEYE.Areas.Identity.Data.MARINEYEUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Boat");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MARINEYE.Models.DueTransactionModel", b =>
-                {
-                    b.HasOne("MARINEYE.Models.ClubDueModel", "ClubDue")
-                        .WithMany()
-                        .HasForeignKey("ClubDueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MARINEYE.Areas.Identity.Data.MARINEYEUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ClubDue");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

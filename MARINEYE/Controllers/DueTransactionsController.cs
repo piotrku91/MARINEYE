@@ -24,9 +24,9 @@ namespace MARINEYE.Controllers
         [Authorize(Roles = Constants.EditClubDuesRoles)]
         public async Task<IActionResult> Index() {
             var transactions = await _context.DueTransactions
-                .Include(d => d.ClubDue) // Include related ClubDue details
+                .Include(d => d.ClubDue)
                 .Join(
-                    _context.Users, // Join with Users table
+                    _context.Users, 
                     transaction => transaction.UserId,
                     user => user.Id,
                     (transaction, user) => new
@@ -39,7 +39,7 @@ namespace MARINEYE.Controllers
                         transaction.AmountPaid,
                         transaction.PaymentDate,
                         ClubDueAmount = transaction.ClubDue.Amount,
-                        ClubDueDescription = transaction.ClubDue.Description // Optional: Include ClubDue description
+                        ClubDueDescription = transaction.ClubDue.Description
                     })
                 .ToListAsync();
 
