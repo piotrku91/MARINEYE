@@ -9,6 +9,7 @@ using MARINEYE.Areas.Identity.Data;
 using MARINEYE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using MARINEYE.Utilities;
 
 namespace MARINEYE.Controllers
 {
@@ -16,11 +17,14 @@ namespace MARINEYE.Controllers
     {
         private readonly MARINEYEContext _context;
         private readonly UserManager<MARINEYEUser> _userManager;
+        private readonly Transactions _transactions;
+
 
         public ClubDuesController(MARINEYEContext context, UserManager<MARINEYEUser> userManager)
         {
             _context = context;
             _userManager = userManager;
+            _transactions = new Transactions(_context);
         }
 
         // GET: ClubDues
@@ -39,7 +43,7 @@ namespace MARINEYE.Controllers
             // For each ClubDueModel, check if the user has already paid
             foreach (var clubDueModel in clubDueModels) {
                 // Check if there's a transaction for the current user for this particular ClubDue
-                var paid = await _context.DueTransactions
+                var paid = await _context.ClubDueTransactions
                     .AnyAsync(dt => dt.UserId == currentUser.Id && dt.ClubDueId == clubDueModel.Id && dt.AmountPaid >= clubDueModel.Amount);
 
                 // Store the paid status in ViewData for each ClubDueModel
@@ -96,37 +100,21 @@ namespace MARINEYE.Controllers
             }
 
             var clubDueModel = await _context.ClubDueModel.FindAsync(id);
+
             if (clubDueModel == null) {
                 return NotFound();
             }
 
-            var userId = User.Identity.Name; 
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId); 
+            var userId = User.Identity.Name;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            var result = await _transactions.PayForClub(clubDueModel, currentUser);
 
-            if (currentUser == null) {
-                return Unauthorized();
-            }
-
-            if (!currentUser.Withdraw(clubDueModel.Amount)) {
-                TempData["Error"] = "Brak wystarczających funduszy.";
+            if (!result.success) {
+                TempData["Error"] = result.errorMessage;
                 return RedirectToAction(nameof(Index));
-            } else {
-                var result = await _userManager.UpdateAsync(currentUser);
             }
-
-            // Create a new DueTransaction
-            var dueTransaction = new DueTransactionModel {
-                UserId = currentUser.Id,
-                ClubDueId = clubDueModel.Id, 
-                AmountPaid = clubDueModel.Amount, 
-                PaymentDate = DateTime.Now, 
-            };
-
-            _context.DueTransactions.Add(dueTransaction);
-
 
             await _context.SaveChangesAsync();
-
             return RedirectToAction(nameof(Index));
         }
 
@@ -198,7 +186,7 @@ namespace MARINEYE.Controllers
             }
 
             // Check if there are linked transactions
-            var hasLinkedTransactions = await _context.DueTransactions
+            var hasLinkedTransactions = await _context.ClubDueTransactions
                 .AnyAsync(dt => dt.ClubDueId == clubDueModel.Id);
 
             if (hasLinkedTransactions) {

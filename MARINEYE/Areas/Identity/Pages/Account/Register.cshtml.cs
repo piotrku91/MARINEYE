@@ -127,8 +127,9 @@ namespace MARINEYE.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                bool isFirstOne = (_userManager.Users.Count() == 0);
+         
                 var user = CreateUser();
-
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
                 user.DOB = Input.DOB;
@@ -140,8 +141,14 @@ namespace MARINEYE.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    //await _userManager.AddToRoleAsync(user, Constants.DefaultRole); // TO DO: Set default to Extern
-                    await _userManager.AddToRoleAsync(user, "Member");
+
+                    if (isFirstOne) {
+                        await _userManager.AddToRoleAsync(user, Constants.MainAdminRole);
+                    }
+                    else {
+                        await _userManager.AddToRoleAsync(user, Constants.DefaultRole);
+                    }
+
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

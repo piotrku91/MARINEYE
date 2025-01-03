@@ -105,7 +105,7 @@ namespace MARINEYE.Controllers
                 bool allPaid = true;
 
                 foreach (var due in userDues) {
-                    var userTransaction = await _context.DueTransactions
+                    var userTransaction = await _context.ClubDueTransactions
                         .Where(dt => dt.UserId == userWithRole.Id && dt.ClubDueId == due.Id)
                         .FirstOrDefaultAsync();
 

@@ -65,7 +65,7 @@ namespace MARINEYE.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Length,Year,State,ImageName")] BoatModel boatModel)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Length,Year,State,ImageName,OneDayCharterCost")] BoatModel boatModel)
         {
             if (ModelState.IsValid)
             {
@@ -101,7 +101,7 @@ namespace MARINEYE.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Constants.EditBoatListAccessRoles)]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Length,Year,State,ImageName")] BoatModel boatModel)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Length,Year,State,ImageName,OneDayCharterCost")] BoatModel boatModel)
         {
             if (id != boatModel.Id)
             {

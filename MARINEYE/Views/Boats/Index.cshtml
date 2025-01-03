@@ -44,6 +44,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.ImageName)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OneDayCharterCost)
+            </th>
             @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
             {
                 <th>Actions</th>
@@ -71,6 +74,9 @@
             <td>
                     <img src="/boatsviews/@Html.DisplayFor(modelItem => item.ImageName)" width="128" height="128"/>
             </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OneDayCharterCost)
+                </td>
 
                 @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
                 {

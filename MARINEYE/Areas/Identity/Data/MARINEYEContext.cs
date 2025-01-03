@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MARINEYE.Models;
+using System.Reflection.Emit;
 
 namespace MARINEYE.Areas.Identity.Data;
 
@@ -21,7 +22,9 @@ public DbSet<MARINEYE.Models.BoatModel> BoatModel { get; set; } = default!;
 
 public DbSet<MARINEYE.Models.ClubDueModel> ClubDueModel { get; set; } = default!;
 
-public DbSet<DueTransactionModel> DueTransactions { get; set; }
+public DbSet<ClubDueTransactionModel> ClubDueTransactions { get; set; }
+
+public DbSet<CharterDueTransactionModel> CharterDueTransactions { get; set; }
 
 public DbSet<MARINEYE.Models.BoatCalendarEvent> BoatCalendarEventModel { get; set; } = default!;
 }

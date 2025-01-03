@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using MARINEYE.Areas.Identity.Data;
 using MARINEYE.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace MARINEYE.Controllers
 {
@@ -20,12 +21,9 @@ namespace MARINEYE.Controllers
             _context = context;
         }
 
-        // GET: DueTransactions
-        [Authorize]
-        public async Task<IActionResult> Index() {
-            
+        private async Task<IActionResult> ViewClubDues() {
             if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
-                var transactions = await _context.DueTransactions
+                var transactions = await _context.ClubDueTransactions
                     .Include(d => d.ClubDue)
                     .Join(
                         _context.Users,
@@ -50,10 +48,11 @@ namespace MARINEYE.Controllers
                 ViewData["Cash"] = currentUser.GetCashAmount();
 
                 return View(transactions);
-            } else {
+            }
+            else {
                 var userId = User.Identity.Name;
 
-                var transactions = await _context.DueTransactions
+                var transactions = await _context.ClubDueTransactions
                     .Include(d => d.ClubDue)
                     .Join(
                         _context.Users,
@@ -80,6 +79,12 @@ namespace MARINEYE.Controllers
             }
         }
 
+        // GET: DueTransactions
+        [Authorize]
+        public async Task<IActionResult> Index() {
+                return await ViewClubDues();
+        }
+
         [Authorize]
         public async Task<IActionResult> TopUpAccount() { // This is temporary function, just for system test purpose (should be implementation of some payment system)
             var userId = User.Identity.Name;
@@ -102,7 +107,7 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
 
-            var dueTransactionModel = await _context.DueTransactions
+            var dueTransactionModel = await _context.ClubDueTransactions
                 .Include(d => d.ClubDue)
                 .Include(d => d.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -120,12 +125,12 @@ namespace MARINEYE.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RollbackConfirmed(int id)
         {
-            var dueTransactionModel = await _context.DueTransactions.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
+            var dueTransactionModel = await _context.ClubDueTransactions.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
             if (dueTransactionModel != null)
             {
                 var user = dueTransactionModel.User;
                 user.Deposit(dueTransactionModel.AmountPaid);
-                _context.DueTransactions.Remove(dueTransactionModel);
+                _context.ClubDueTransactions.Remove(dueTransactionModel);
             }
 
             await _context.SaveChangesAsync();
@@ -134,7 +139,7 @@ namespace MARINEYE.Controllers
 
         private bool DueTransactionModelExists(int id)
         {
-            return _context.DueTransactions.Any(e => e.Id == id);
+            return _context.ClubDueTransactions.Any(e => e.Id == id);
         }
     }
 }

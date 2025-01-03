@@ -1,6 +1,8 @@
 ﻿using MARINEYE.Areas.Identity.Data;
 using MARINEYE.Models;
+using MARINEYE.Utilities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +13,11 @@ namespace MARINEYE.Controllers
     public class BoatCalendarEventsController : Controller
     {
         private readonly MARINEYEContext _context;
+        private readonly Transactions _transactions;
 
         public BoatCalendarEventsController(MARINEYEContext context) {
             _context = context;
+            _transactions = new Transactions(_context);
         }
 
         // GET: BoatCalendarEvents
@@ -46,6 +50,7 @@ namespace MARINEYE.Controllers
             return true;
         }
 
+     
         public async Task<IActionResult> Index() {
 
             var boatCalendarEvents = _context.BoatCalendarEventModel.Include(b => b.Boat).Include(b => b.User).Where(b => b.EndDate >= DateTime.Now);
@@ -105,7 +110,7 @@ namespace MARINEYE.Controllers
 
             var paid = true;
             foreach (var clubDueModel in clubDueModels) {
-                paid = paid && await _context.DueTransactions
+                paid = paid && await _context.ClubDueTransactions
                     .AnyAsync(dt => dt.UserId == currentUser.Id && dt.ClubDueId == clubDueModel.Id && dt.AmountPaid >= clubDueModel.Amount);
             }
 
@@ -146,11 +151,10 @@ namespace MARINEYE.Controllers
 
                 if (User.IsInRole("Extern")) {
                     boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Charter;
-                    var charterDays = (boatCalendarEvent.EndDate - boatCalendarEvent.BeginDate).Days;
-                    var totalCost = charterDays * boatCalendarEvent.Boat.OneDayCharterCost;
+                    var result = await _transactions.PayForCharter(boatCalendarEvent, currentUser);
 
-                    if (!boatCalendarEvent.User.Withdraw(totalCost)) {
-                        TempData["Error"] = "Brak wystarczających funduszy. (" + charterDays + " dni x " + boatCalendarEvent.Boat.OneDayCharterCost + " = " + totalCost;
+                    if (!result.success) {
+                        TempData["Error"] = result.errorMessage;
                         return RedirectToAction(nameof(Index));
                     }
                 } else {

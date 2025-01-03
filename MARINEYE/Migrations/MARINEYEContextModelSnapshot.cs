@@ -99,7 +99,7 @@ namespace MARINEYE.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("MARINEYE.Models.BoatCalendarEventModel", b =>
+            modelBuilder.Entity("MARINEYE.Models.BoatCalendarEvent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -117,6 +117,9 @@ namespace MARINEYE.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("EventState")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventType")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -155,6 +158,9 @@ namespace MARINEYE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("OneDayCharterCost")
+                        .HasColumnType("int");
+
                     b.Property<int>("State")
                         .HasColumnType("int");
 
@@ -164,6 +170,30 @@ namespace MARINEYE.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("BoatModel");
+                });
+
+            modelBuilder.Entity("MARINEYE.Models.CharterDueTransactionModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AmountPaid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BoatCalendarEventId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoatCalendarEventId");
+
+                    b.ToTable("CharterDueTransactions");
                 });
 
             modelBuilder.Entity("MARINEYE.Models.ClubDueModel", b =>
@@ -191,7 +221,7 @@ namespace MARINEYE.Migrations
                     b.ToTable("ClubDueModel");
                 });
 
-            modelBuilder.Entity("MARINEYE.Models.DueTransactionModel", b =>
+            modelBuilder.Entity("MARINEYE.Models.ClubDueTransactionModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +248,7 @@ namespace MARINEYE.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("DueTransactions");
+                    b.ToTable("ClubDueTransactions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -358,7 +388,7 @@ namespace MARINEYE.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MARINEYE.Models.BoatCalendarEventModel", b =>
+            modelBuilder.Entity("MARINEYE.Models.BoatCalendarEvent", b =>
                 {
                     b.HasOne("MARINEYE.Models.BoatModel", "Boat")
                         .WithMany()
@@ -377,7 +407,18 @@ namespace MARINEYE.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("MARINEYE.Models.DueTransactionModel", b =>
+            modelBuilder.Entity("MARINEYE.Models.CharterDueTransactionModel", b =>
+                {
+                    b.HasOne("MARINEYE.Models.BoatCalendarEvent", "BoatCalendarEvent")
+                        .WithMany()
+                        .HasForeignKey("BoatCalendarEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BoatCalendarEvent");
+                });
+
+            modelBuilder.Entity("MARINEYE.Models.ClubDueTransactionModel", b =>
                 {
                     b.HasOne("MARINEYE.Models.ClubDueModel", "ClubDue")
                         .WithMany()
