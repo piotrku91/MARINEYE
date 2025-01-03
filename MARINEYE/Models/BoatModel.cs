@@ -12,5 +12,6 @@ namespace MARINEYE.Models
         public int Year { get; set; }
         public BoatState State { get; set; }
         public string ImageName { get; set; }
+        public int OneDayCharterCost { get; set; }
     }
 }

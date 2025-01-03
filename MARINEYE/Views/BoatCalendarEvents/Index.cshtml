@@ -34,6 +34,9 @@
                 @Html.DisplayNameFor(model => model.Boat.Name)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.EventType)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.EventState)
             </th>
             <th></th>
@@ -53,6 +56,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Boat.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventType)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.EventState)

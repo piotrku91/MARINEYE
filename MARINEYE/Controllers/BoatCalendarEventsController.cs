@@ -47,8 +47,9 @@ namespace MARINEYE.Controllers
         }
 
         public async Task<IActionResult> Index() {
-            var mARINEYEContext = _context.BoatCalendarEventModel.Include(b => b.Boat).Include(b => b.User).Where(b => b.EndDate >= DateTime.Now);
-            return View(await mARINEYEContext.ToListAsync());
+
+            var boatCalendarEvents = _context.BoatCalendarEventModel.Include(b => b.Boat).Include(b => b.User).Where(b => b.EndDate >= DateTime.Now);
+            return View(await boatCalendarEvents.ToListAsync());
         }
 
         private async Task<bool> ReservationExists(BoatCalendarEvent boatCalendarEvent) {
@@ -99,6 +100,7 @@ namespace MARINEYE.Controllers
                 return Unauthorized();
             }
 
+
             var clubDueModels = await _context.ClubDueModel.ToListAsync();
 
             var paid = true;
@@ -141,6 +143,19 @@ namespace MARINEYE.Controllers
                 if (!await ValidateEvent(boatCalendarEvent)) {
                     return RedirectToAction(nameof(Index));
                 };
+
+                if (User.IsInRole("Extern")) {
+                    boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Charter;
+                    var charterDays = (boatCalendarEvent.EndDate - boatCalendarEvent.BeginDate).Days;
+                    var totalCost = charterDays * boatCalendarEvent.Boat.OneDayCharterCost;
+
+                    if (!boatCalendarEvent.User.Withdraw(totalCost)) {
+                        TempData["Error"] = "Brak wystarczających funduszy. (" + charterDays + " dni x " + boatCalendarEvent.Boat.OneDayCharterCost + " = " + totalCost;
+                        return RedirectToAction(nameof(Index));
+                    }
+                } else {
+                    boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Internal;
+                }
 
                 // Dodanie nowej rezerwacji, jeśli termin jest wolny
                 _context.Add(boatCalendarEvent);

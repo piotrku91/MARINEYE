@@ -27,5 +27,7 @@ namespace MARINEYE.Models
         public virtual BoatModel Boat { get; set; }
 
         public BoatCalendarEventState EventState { get; set; }
+
+        public BoatCalendarEventType EventType { get; set; }
     }
 }
