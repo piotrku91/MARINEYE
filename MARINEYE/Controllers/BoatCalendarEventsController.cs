@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using MARINEYE.Areas.Identity.Data;
 using MARINEYE.Models;
 using Microsoft.AspNetCore.Authorization;
+using MARINEYE.Utilities;
 
 namespace MARINEYE.Controllers
 {
@@ -22,9 +23,38 @@ namespace MARINEYE.Controllers
         }
 
         // GET: BoatCalendarEvents
+
+        private async Task<bool> ValidateEvent(BoatCalendarEvent boatCalendarEvent) {
+            if (boatCalendarEvent.Boat == null) {
+                return false;
+            }
+
+            if (boatCalendarEvent.BeginDate < DateTime.Now) {
+                TempData["Error"] = "Błąd. Podany termin rozpoczęcia już minał!";
+                return false;
+            }
+
+            if (boatCalendarEvent.BeginDate > boatCalendarEvent.EndDate) {
+                TempData["Error"] = "Błąd. Podany termin rozpoczęcia nieprawidłowy (Data występuje po dacie zakończenia)";
+                return false;
+            }
+
+            if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
+                TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
+                return false;
+            }
+
+            if (await ReservationExists(boatCalendarEvent)) {
+                TempData["Error"] = "Wybrany termin jest już zajęty. Wybierz inny.";
+                return false;
+            }
+
+            return true;
+        }
+
         public async Task<IActionResult> Index()
         {
-            var mARINEYEContext = _context.BoatCalendarEventModel.Include(b => b.Boat).Include(b => b.User);
+            var mARINEYEContext = _context.BoatCalendarEventModel.Include(b => b.Boat).Include(b => b.User).Where(b => b.EndDate >= DateTime.Now);
             return View(await mARINEYEContext.ToListAsync());
         }
 
@@ -117,19 +147,9 @@ namespace MARINEYE.Controllers
                 boatCalendarEvent.User = currentUser;
                 boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Reserved;
 
-                if (boatCalendarEvent.Boat == null) {
-                    return NotFound();
-                }
-
-                if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
-                    TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
+                if (!await ValidateEvent(boatCalendarEvent)) {
                     return RedirectToAction(nameof(Index));
-                }
-                
-                if (await ReservationExists(boatCalendarEvent)) {
-                    TempData["Error"] = "Wybrany termin jest już zajęty. Wybierz inny.";
-                    return RedirectToAction(nameof(Index));
-                }
+                };
 
                 // Dodanie nowej rezerwacji, jeśli termin jest wolny
                 _context.Add(boatCalendarEvent);
@@ -139,6 +159,118 @@ namespace MARINEYE.Controllers
 
             ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name", boatCalendarEventDTO.BoatId);
             return View(boatCalendarEventDTO);
+        }
+
+        // GET: BoatCalendarEvents/Edit/5
+        [Authorize(Roles = Constants.EditBoatListAccessRoles)]
+        public async Task<IActionResult> Edit(int? id) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var boatCalendarEvent = await _context.BoatCalendarEventModel.FindAsync(id);
+            if (boatCalendarEvent == null) {
+                return NotFound();
+            }
+
+            BoatCalendarEventDTO boatCalendarEventDTO = new BoatCalendarEventDTO();
+
+            boatCalendarEventDTO.Id = boatCalendarEvent.Id;
+            boatCalendarEventDTO.BeginDate = boatCalendarEvent.BeginDate;
+            boatCalendarEventDTO.EndDate = boatCalendarEvent.EndDate;
+            boatCalendarEventDTO.BoatId = boatCalendarEvent.BoatId;
+
+            ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name", boatCalendarEventDTO.BoatId);
+            return View(boatCalendarEventDTO);
+        }
+
+        // POST: BoatCalendarEvents/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = Constants.EditBoatListAccessRoles)]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,BeginDate,EndDate,BoatId")] BoatCalendarEventDTO boatCalendarEventDTO) {
+            if (id != boatCalendarEventDTO.Id) {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid) {
+                var boatCalendarEvent = _context.BoatCalendarEventModel.FirstOrDefault(b => b.Id == boatCalendarEventDTO.BoatId);
+                if (boatCalendarEvent == null) {
+                    return NotFound();
+                }
+
+                boatCalendarEvent.Id = boatCalendarEventDTO.Id;
+                boatCalendarEvent.BeginDate = boatCalendarEventDTO.BeginDate;
+                boatCalendarEvent.EndDate = boatCalendarEventDTO.EndDate;
+                boatCalendarEvent.BoatId = boatCalendarEventDTO.BoatId;
+                boatCalendarEvent.Boat = _context.BoatModel.FirstOrDefault(b => b.Id == boatCalendarEvent.BoatId);
+
+                if (!await ValidateEvent(boatCalendarEvent)) {
+                    return RedirectToAction(nameof(Index));
+                };
+
+                bool isEventStared = await _context.BoatCalendarEventModel
+               .AnyAsync(e => e.BoatId == id && e.BeginDate <= DateTime.Now && e.EndDate <= DateTime.Now);
+                if (isEventStared) {
+                    TempData["Error"] = "Nie można zmienić. Wydarzenie już się rozpoczęło";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _context.Update(boatCalendarEvent);
+                    await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: BoatCalendarEvents/Delete/5
+        [Authorize(Roles = Constants.EditBoatListAccessRoles)]
+        public async Task<IActionResult> Delete(int? id) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var boatCalendarEvent = await _context.BoatCalendarEventModel
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (boatCalendarEvent == null) {
+                return NotFound();
+            }
+
+            return View(boatCalendarEvent);
+        }
+
+        // POST: BoatCalendarEvents/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id) {
+            var boatCalendarEvent = await _context.BoatCalendarEventModel.FindAsync(id);
+
+            bool isEventStared = await _context.BoatCalendarEventModel
+                .AnyAsync(e => e.BoatId == id && e.BeginDate <= DateTime.Now && e.EndDate <= DateTime.Now);
+
+
+            var userId = User.Identity.Name;
+
+            if (boatCalendarEvent.UserId == userId || User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
+                
+                if (isEventStared) {
+                    TempData["Error"] = "Nie można usunąć. Wydarzenie już się rozpoczęło";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (boatCalendarEvent != null) {
+                    _context.BoatCalendarEventModel.Remove(boatCalendarEvent);
+                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+
+            } else {
+                return Unauthorized();
+            }
         }
 
     }

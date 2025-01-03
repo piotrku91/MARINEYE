@@ -21,29 +21,55 @@ namespace MARINEYE.Controllers
         }
 
         // GET: DueTransactions
-        [Authorize(Roles = Constants.EditClubDuesRoles)]
+        [Authorize]
         public async Task<IActionResult> Index() {
-            var transactions = await _context.DueTransactions
-                .Include(d => d.ClubDue)
-                .Join(
-                    _context.Users, 
-                    transaction => transaction.UserId,
-                    user => user.Id,
-                    (transaction, user) => new
-                    {
-                        transaction.Id,
-                        UserFirstName = user.FirstName,
-                        UserLastName = user.LastName,
-                        transaction.UserId,
-                        transaction.ClubDueId,
-                        transaction.AmountPaid,
-                        transaction.PaymentDate,
-                        ClubDueAmount = transaction.ClubDue.Amount,
-                        ClubDueDescription = transaction.ClubDue.Description
-                    })
-                .ToListAsync();
+            if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
+                var transactions = await _context.DueTransactions
+                    .Include(d => d.ClubDue)
+                    .Join(
+                        _context.Users,
+                        transaction => transaction.UserId,
+                        user => user.Id,
+                        (transaction, user) => new
+                        {
+                            transaction.Id,
+                            UserFirstName = user.FirstName,
+                            UserLastName = user.LastName,
+                            transaction.UserId,
+                            transaction.ClubDueId,
+                            transaction.AmountPaid,
+                            transaction.PaymentDate,
+                            ClubDueAmount = transaction.ClubDue.Amount,
+                            ClubDueDescription = transaction.ClubDue.Description
+                        })
+                    .ToListAsync();
 
-            return View(transactions);
+                return View(transactions);
+            } else {
+                var userId = User.Identity.Name;
+
+                var transactions = await _context.DueTransactions
+                    .Include(d => d.ClubDue)
+                    .Join(
+                        _context.Users,
+                        transaction => transaction.UserId,
+                        user => user.Id,
+                        (transaction, user) => new
+                        {
+                            transaction.Id,
+                            UserFirstName = user.FirstName,
+                            UserLastName = user.LastName,
+                            transaction.UserId,
+                            transaction.ClubDueId,
+                            transaction.AmountPaid,
+                            transaction.PaymentDate,
+                            ClubDueAmount = transaction.ClubDue.Amount,
+                            ClubDueDescription = transaction.ClubDue.Description
+                        })
+                    .Where(t => t.UserId == userId) // Pokaż tylko transakcje usera jeżeli nie jest administratorem lub bosmanem
+                    .ToListAsync();
+                return View(transactions);
+            }
         }
 
         [Authorize(Roles = Constants.EditClubDuesRoles)]
