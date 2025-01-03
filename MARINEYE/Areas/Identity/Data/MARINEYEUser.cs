@@ -17,8 +17,26 @@ public class MARINEYEUser : IdentityUser
     [PersonalData]
     public DateTime DOB { get; set; }
 
+    // Personal account operations
     [PersonalData]
     public int CashAmount { get; set; }
+
+    public void Deposit(int amount) {
+        CashAmount += amount;
+    }
+
+    public bool Withdraw(int amount) {
+        if (amount > CashAmount) {
+            return false;
+        }
+
+        CashAmount -= amount;
+        return true;
+    }
+
+    public int GetCashAmount() {
+        return CashAmount;
+    }
 
 }
 

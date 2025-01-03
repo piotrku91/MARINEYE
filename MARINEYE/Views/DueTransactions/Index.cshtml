@@ -4,13 +4,18 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>TWOJE SALDO</h1>
+<p>@ViewData["Cash"] PLN [<a asp-action="TopUpAccount">+ Zasil konto]</a></p>
+<br><br />
+
+<h1>Lista transakcji na konto klubu</h1>
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
         @TempData["Error"]
     </div>
 }
+
 
 <table class="table">
     <thead>

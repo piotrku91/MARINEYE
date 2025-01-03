@@ -23,6 +23,7 @@ namespace MARINEYE.Controllers
         // GET: DueTransactions
         [Authorize]
         public async Task<IActionResult> Index() {
+            
             if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
                 var transactions = await _context.DueTransactions
                     .Include(d => d.ClubDue)
@@ -43,6 +44,10 @@ namespace MARINEYE.Controllers
                             ClubDueDescription = transaction.ClubDue.Description
                         })
                     .ToListAsync();
+
+                var userId = User.Identity.Name;
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+                ViewData["Cash"] = currentUser.GetCashAmount();
 
                 return View(transactions);
             } else {
@@ -66,11 +71,28 @@ namespace MARINEYE.Controllers
                             ClubDueAmount = transaction.ClubDue.Amount,
                             ClubDueDescription = transaction.ClubDue.Description
                         })
-                    .Where(t => t.UserId == userId) // Pokaż tylko transakcje usera jeżeli nie jest administratorem lub bosmanem
+                    .Where(t => t.UserId == userId) // Show only users transactions
                     .ToListAsync();
+
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+                ViewData["Cash"] = currentUser.GetCashAmount();
                 return View(transactions);
             }
         }
+
+        [Authorize]
+        public async Task<IActionResult> TopUpAccount() { // This is temporary function, just for system test purpose (should be implementation of some payment system)
+            var userId = User.Identity.Name;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+
+            if (currentUser != null && currentUser.GetCashAmount() <= 2500) {
+                currentUser.Deposit(500);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
         [Authorize(Roles = Constants.EditClubDuesRoles)]
         public async Task<IActionResult> Rollback(int? id)
@@ -102,7 +124,7 @@ namespace MARINEYE.Controllers
             if (dueTransactionModel != null)
             {
                 var user = dueTransactionModel.User;
-                user.CashAmount = dueTransactionModel.User.CashAmount + dueTransactionModel.AmountPaid;
+                user.Deposit(dueTransactionModel.AmountPaid);
                 _context.DueTransactions.Remove(dueTransactionModel);
             }
 

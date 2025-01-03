@@ -107,10 +107,10 @@ namespace MARINEYE.Controllers
                 return Unauthorized();
             }
 
-            if (currentUser.CashAmount < clubDueModel.Amount) {
+            if (!currentUser.Withdraw(clubDueModel.Amount)) {
+                TempData["Error"] = "Brak wystarczających funduszy.";
                 return RedirectToAction(nameof(Index));
             } else {
-                currentUser.CashAmount = currentUser.CashAmount - clubDueModel.Amount;
                 var result = await _userManager.UpdateAsync(currentUser);
             }
 
