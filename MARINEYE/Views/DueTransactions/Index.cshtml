@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model Tuple<List<ClubDueTransactionModel>, List<CharterDueTransactionModel>>
 
 @{
     ViewData["Title"] = "Index";
@@ -6,9 +6,15 @@
 
 <h1>TWOJE SALDO</h1>
 <p>@ViewData["Cash"] PLN [<a asp-action="TopUpAccount">+ Zasil konto]</a></p>
-<br><br />
+<br><br/>
 
-<h1>Lista transakcji na konto klubu</h1>
+@if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
+<h1>SALDO KLUBOWE</h1>
+<p>@ViewData["ClubCash"] PLN </p>
+<br>
+<br />
+}
+
 @if (TempData["Error"] != null)
 {
     <div class="alert alert-danger">
@@ -16,6 +22,10 @@
     </div>
 }
 
+
+@if (!User.IsInRole("Extern"))
+{
+<h1>Lista transakcji klubowiczów na konto klubu</h1>
 
 <table class="table">
     <thead>
@@ -30,15 +40,44 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var transaction in Model)
+        @foreach (var transaction in Model.Item1)
         {
             <tr>
-                <td>@transaction.UserFirstName @transaction.UserLastName</td>
+                <td>@transaction.User.FirstName @transaction.User.LastName</td>
                 <td>@transaction.ClubDueId</td>
-                <td>@transaction.ClubDueAmount</td>
+                <td>@transaction.ClubDue.Amount</td>
                 <td>@transaction.AmountPaid</td>
-                <td>@transaction.PaymentDate?.ToString("yyyy-MM-dd")</td>
-                <td>@transaction.ClubDueDescription</td>
+                <td>@transaction.PaymentDate.ToString("yyyy-MM-dd")</td>
+                <td>@transaction.ClubDue.Description</td>
+                <td>
+                    <a asp-action="Rollback" asp-route-id="@transaction.Id">Cofnij</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+
+<h1>Lista transakcji czarterów na konto klubu</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Amount Paid</th>
+            <th>Payment Date</th>
+            <th>Event</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transaction in Model.Item2)
+        {
+            <tr>
+                <td>@transaction.BoatCalendarEvent.User.FirstName @transaction.BoatCalendarEvent.User.LastName</td>
+                <td>@transaction.AmountPaid</td>
+                <td>@transaction.PaymentDate</td>
+                <td>@transaction.BoatCalendarEventId</td>
                 <td>
                     <a asp-action="Rollback" asp-route-id="@transaction.Id">Cofnij</a>
                 </td>

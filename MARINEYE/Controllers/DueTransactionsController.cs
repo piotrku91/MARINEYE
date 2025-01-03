@@ -21,68 +21,57 @@ namespace MARINEYE.Controllers
             _context = context;
         }
 
-        private async Task<IActionResult> ViewClubDues() {
+        private async Task<IActionResult> ViewAllDues() {
+            var userId = User.Identity.Name;
+
             if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
-                var transactions = await _context.ClubDueTransactions
+                var clubTransactions = await _context.ClubDueTransactions
                     .Include(d => d.ClubDue)
-                    .Join(
-                        _context.Users,
-                        transaction => transaction.UserId,
-                        user => user.Id,
-                        (transaction, user) => new
-                        {
-                            transaction.Id,
-                            UserFirstName = user.FirstName,
-                            UserLastName = user.LastName,
-                            transaction.UserId,
-                            transaction.ClubDueId,
-                            transaction.AmountPaid,
-                            transaction.PaymentDate,
-                            ClubDueAmount = transaction.ClubDue.Amount,
-                            ClubDueDescription = transaction.ClubDue.Description
-                        })
                     .ToListAsync();
 
-                var userId = User.Identity.Name;
-                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
-                ViewData["Cash"] = currentUser.GetCashAmount();
+                // Get all charter transactions
+                var charterTransactions = await _context.CharterDueTransactions
+                .Include(t => t.BoatCalendarEvent)
+                .ThenInclude(be => be.User)
+                .ToListAsync();
 
-                return View(transactions);
+                // Return the view with both transaction lists
+                return View(Tuple.Create(clubTransactions, charterTransactions));
             }
             else {
-                var userId = User.Identity.Name;
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
 
-                var transactions = await _context.ClubDueTransactions
+                // Get the current user's club transactions
+                var clubTransactions = await _context.ClubDueTransactions
                     .Include(d => d.ClubDue)
-                    .Join(
-                        _context.Users,
-                        transaction => transaction.UserId,
-                        user => user.Id,
-                        (transaction, user) => new
-                        {
-                            transaction.Id,
-                            UserFirstName = user.FirstName,
-                            UserLastName = user.LastName,
-                            transaction.UserId,
-                            transaction.ClubDueId,
-                            transaction.AmountPaid,
-                            transaction.PaymentDate,
-                            ClubDueAmount = transaction.ClubDue.Amount,
-                            ClubDueDescription = transaction.ClubDue.Description
-                        })
-                    .Where(t => t.UserId == userId) // Show only users transactions
+                    .Where(t => t.UserId == currentUser.Id)
                     .ToListAsync();
 
-                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
-                ViewData["Cash"] = currentUser.GetCashAmount();
-                return View(transactions);
+                // Get the current user's charter transactions
+                var charterTransactions = await _context.CharterDueTransactions
+                    .Include(t => t.BoatCalendarEvent)
+                    .ThenInclude(be => be.User)
+                    .Where(t => t.BoatCalendarEvent.User.Id == currentUser.Id) 
+                    .ToListAsync();
+
+                return View(Tuple.Create(clubTransactions, charterTransactions));
             }
         }
+
 
         // GET: DueTransactions
         [Authorize]
         public async Task<IActionResult> Index() {
-                return await ViewClubDues();
+            var userId = User.Identity.Name;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            ViewData["Cash"] = currentUser.GetCashAmount();
+
+            var totalClubAmount = _context.CharterDueTransactions.Sum(t => t.AmountPaid);
+            var totalCharterAmount = _context.CharterDueTransactions.Sum(t => t.AmountPaid);
+            var totalAmount = totalClubAmount + totalCharterAmount;
+            ViewData["ClubCash"] = totalAmount;
+
+            return await ViewAllDues();
         }
 
         [Authorize]
