@@ -15,7 +15,7 @@ public class MARINEYEContext : IdentityDbContext<MARINEYEUser>
         base.OnModelCreating(builder);
     }
 
-public DbSet<MARINEYE.Models.EditableUserModel> EditableUserModel { get; set; } = default!;
+public DbSet<MARINEYE.Models.UserModelDTO> EditableUserModel { get; set; } = default!;
 
 public DbSet<MARINEYE.Models.BoatModel> BoatModel { get; set; } = default!;
 

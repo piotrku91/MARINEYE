@@ -4,7 +4,7 @@ namespace MARINEYE.Models
 {
 
     [NotMapped]
-    public class EditableUserModel
+    public class UserModelDTO
     {
         public string Id { get; set; }
         public string Email { get; set; }

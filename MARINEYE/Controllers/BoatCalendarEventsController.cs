@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using MARINEYE.Areas.Identity.Data;
+using MARINEYE.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using MARINEYE.Areas.Identity.Data;
-using MARINEYE.Models;
-using Microsoft.AspNetCore.Authorization;
-using MARINEYE.Utilities;
 
 namespace MARINEYE.Controllers
 {
@@ -17,8 +12,7 @@ namespace MARINEYE.Controllers
     {
         private readonly MARINEYEContext _context;
 
-        public BoatCalendarEventsController(MARINEYEContext context)
-        {
+        public BoatCalendarEventsController(MARINEYEContext context) {
             _context = context;
         }
 
@@ -52,8 +46,7 @@ namespace MARINEYE.Controllers
             return true;
         }
 
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index() {
             var mARINEYEContext = _context.BoatCalendarEventModel.Include(b => b.Boat).Include(b => b.User).Where(b => b.EndDate >= DateTime.Now);
             return View(await mARINEYEContext.ToListAsync());
         }
@@ -69,8 +62,7 @@ namespace MARINEYE.Controllers
         }
 
         // GET: BoatCalendarEvents/Create
-        public IActionResult Create()
-        {
+        public IActionResult Create() {
             ViewData["BoatId"] = new SelectList(_context.BoatModel, "Id", "Name");
             return View();
         }
@@ -132,8 +124,7 @@ namespace MARINEYE.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,BeginDate,EndDate,BoatId")] BoatCalendarEventDTO boatCalendarEventDTO)
-        {
+        public async Task<IActionResult> Create([Bind("Id,BeginDate,EndDate,BoatId")] BoatCalendarEventDTO boatCalendarEventDTO) {
             if (ModelState.IsValid) {
                 BoatCalendarEvent boatCalendarEvent = new BoatCalendarEvent();
                 boatCalendarEvent.Id = boatCalendarEventDTO.Id;
@@ -219,7 +210,7 @@ namespace MARINEYE.Controllers
                 }
 
                 _context.Update(boatCalendarEvent);
-                    await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
@@ -255,7 +246,7 @@ namespace MARINEYE.Controllers
             var userId = User.Identity.Name;
 
             if (boatCalendarEvent.UserId == userId || User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
-                
+
                 if (isEventStared) {
                     TempData["Error"] = "Nie można usunąć. Wydarzenie już się rozpoczęło";
                     return RedirectToAction(nameof(Index));
@@ -268,7 +259,8 @@ namespace MARINEYE.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
 
-            } else {
+            }
+            else {
                 return Unauthorized();
             }
         }

@@ -87,7 +87,7 @@ namespace MARINEYE.Controllers
             userWithRole => userWithRole.userRole.RoleId,
             role => role.Id,
 
-            (userWithRole, role) => new EditableUserModel {
+            (userWithRole, role) => new UserModelDTO {
             Id = userWithRole.user.Id,
             Email = userWithRole.user.Email,
             FirstName = userWithRole.user.FirstName,
@@ -138,7 +138,7 @@ namespace MARINEYE.Controllers
             var userRole = await FindRole(user);
 
             // Create a model or directly pass user to the view
-            var model = new EditableUserModel {
+            var model = new UserModelDTO {
                 Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
@@ -154,7 +154,7 @@ namespace MARINEYE.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = Constants.MainAdminRole)]
-        public async Task<IActionResult> Edit(EditableUserModel model) {
+        public async Task<IActionResult> Edit(UserModelDTO model) {
             if (!ModelState.IsValid) {
                 return View(model);
             }
