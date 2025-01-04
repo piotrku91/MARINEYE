@@ -50,7 +50,7 @@
                 <td>@transaction.PaymentDate.ToString("yyyy-MM-dd")</td>
                 <td>@transaction.ClubDue.Description</td>
                 <td>
-                    <a asp-action="Rollback" asp-route-id="@transaction.Id">Cofnij</a>
+                    <a asp-action="RollbackClubDue" asp-route-id="@transaction.Id">Cofnij</a>
                 </td>
             </tr>
         }
@@ -79,7 +79,7 @@
                 <td>@transaction.PaymentDate</td>
                 <td>@transaction.BoatCalendarEventId</td>
                 <td>
-                    <a asp-action="Rollback" asp-route-id="@transaction.Id">Cofnij</a>
+                    <a asp-action="RollbackCharterDue" asp-route-id="@transaction.Id">Cofnij</a>
                 </td>
             </tr>
         }

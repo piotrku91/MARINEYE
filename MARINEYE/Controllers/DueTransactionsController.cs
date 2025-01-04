@@ -66,7 +66,7 @@ namespace MARINEYE.Controllers
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
             ViewData["Cash"] = currentUser.GetCashAmount();
 
-            var totalClubAmount = _context.CharterDueTransactions.Sum(t => t.AmountPaid);
+            var totalClubAmount = _context.ClubDueTransactions.Sum(t => t.AmountPaid);
             var totalCharterAmount = _context.CharterDueTransactions.Sum(t => t.AmountPaid);
             var totalAmount = totalClubAmount + totalCharterAmount;
             ViewData["ClubCash"] = totalAmount;
@@ -89,7 +89,7 @@ namespace MARINEYE.Controllers
 
 
         [Authorize(Roles = Constants.EditClubDuesRoles)]
-        public async Task<IActionResult> Rollback(int? id)
+        public async Task<IActionResult> RollbackClubDue(int? id)
         {
             if (id == null)
             {
@@ -110,9 +110,9 @@ namespace MARINEYE.Controllers
 
         // POST: DueTransactions/Delete/5
         [Authorize(Roles = Constants.EditClubDuesRoles)]
-        [HttpPost, ActionName("Rollback")]
+        [HttpPost, ActionName("RollbackClubDue")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RollbackConfirmed(int id)
+        public async Task<IActionResult> RollbackClubDueConfirmed(int id)
         {
             var dueTransactionModel = await _context.ClubDueTransactions.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
             if (dueTransactionModel != null)
