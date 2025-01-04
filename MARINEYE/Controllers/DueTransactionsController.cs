@@ -64,7 +64,9 @@ namespace MARINEYE.Controllers
         public async Task<IActionResult> Index() {
             var userId = User.Identity.Name;
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
-            ViewData["Cash"] = currentUser.GetCashAmount();
+            if (currentUser != null) {
+                ViewData["Cash"] = currentUser.GetCashAmount();
+            }
 
             var totalClubAmount = _context.ClubDueTransactions.Sum(t => t.AmountPaid);
             var totalCharterAmount = _context.CharterDueTransactions.Sum(t => t.AmountPaid);
