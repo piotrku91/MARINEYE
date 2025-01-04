@@ -10,6 +10,7 @@ namespace MARINEYE.Models
         public string Description { get; set; }
         public int Length { get; set; }
         public int Year { get; set; }
+       //public string Class { get; set; }
         public BoatState State { get; set; }
         public string ImageName { get; set; }
         public int OneDayCharterCost { get; set; }

@@ -26,5 +26,9 @@ public DbSet<ClubDueTransactionModel> ClubDueTransactions { get; set; }
 
 public DbSet<CharterDueTransactionModel> CharterDueTransactions { get; set; }
 
+public DbSet<ClubDueTransactionModel> ClosedClubDueTransactions { get; set; }
+
+public DbSet<CharterDueTransactionModel> ClosedCharterDueTransactions { get; set; }
+
 public DbSet<MARINEYE.Models.BoatCalendarEvent> BoatCalendarEventModel { get; set; } = default!;
 }

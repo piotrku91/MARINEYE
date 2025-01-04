@@ -22,8 +22,6 @@ namespace MARINEYE.Controllers
         }
 
         private async Task<IActionResult> ViewAllDues() {
-            var userId = User.Identity.Name;
-
             if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
                 var clubTransactions = await _context.ClubDueTransactions
                     .Include(d => d.ClubDue)
@@ -39,7 +37,7 @@ namespace MARINEYE.Controllers
                 return View(Tuple.Create(clubTransactions, charterTransactions));
             }
             else {
-                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
                 // Get the current user's club transactions
                 var clubTransactions = await _context.ClubDueTransactions
@@ -62,8 +60,7 @@ namespace MARINEYE.Controllers
         // GET: DueTransactions
         [Authorize]
         public async Task<IActionResult> Index() {
-            var userId = User.Identity.Name;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
             if (currentUser != null) {
                 ViewData["Cash"] = currentUser.GetCashAmount();
             }
@@ -78,8 +75,7 @@ namespace MARINEYE.Controllers
 
         [Authorize]
         public async Task<IActionResult> TopUpAccount() { // This is temporary function, just for system test purpose (should be implementation of some payment system)
-            var userId = User.Identity.Name;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
             if (currentUser != null && currentUser.GetCashAmount() <= 2500) {
                 currentUser.Deposit(500);

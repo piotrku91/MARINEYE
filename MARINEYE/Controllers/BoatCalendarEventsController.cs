@@ -98,8 +98,7 @@ namespace MARINEYE.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var userId = User.Identity.Name;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
             if (currentUser == null) {
                 return Unauthorized();
@@ -139,9 +138,8 @@ namespace MARINEYE.Controllers
                 boatCalendarEvent.EndDate = boatCalendarEventDTO.EndDate;
                 boatCalendarEvent.BoatId = boatCalendarEventDTO.BoatId;
                 boatCalendarEvent.Boat = _context.BoatModel.FirstOrDefault(b => b.Id == boatCalendarEvent.BoatId);
-                var userId = User.Identity.Name;
-                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
-                boatCalendarEvent.UserId = userId;
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+                boatCalendarEvent.UserId = currentUser.Id;
                 boatCalendarEvent.User = currentUser;
                 boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Reserved;
 
@@ -253,6 +251,7 @@ namespace MARINEYE.Controllers
         }
 
         // POST: BoatCalendarEvents/Delete/5
+        [Authorize(Roles = Constants.EditBoatListAccessRoles)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id) {
@@ -265,9 +264,9 @@ namespace MARINEYE.Controllers
             .AnyAsync(t => t.BoatCalendarEventId == id);
 
 
-            var userId = User.Identity.Name;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
-            if (boatCalendarEvent.UserId == userId || User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
+            if (boatCalendarEvent.UserId == currentUser.Id || User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
 
                 if (isEventStared) {
                     TempData["Error"] = "Nie można usunąć. Wydarzenie już się rozpoczęło";

@@ -30,8 +30,7 @@ namespace MARINEYE.Controllers
         // GET: ClubDues
         public async Task<IActionResult> Index() {
             // Retrieve the current logged-in user
-            var userId = User.Identity.Name; // or User.FindFirstValue(ClaimTypes.NameIdentifier) depending on how user id is stored
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
             if (currentUser == null) {
                 return Unauthorized();
@@ -105,8 +104,7 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
 
-            var userId = User.Identity.Name;
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userId);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
             var result = await _transactions.PayForClub(clubDueModel, currentUser);
 
             if (!result.success) {
