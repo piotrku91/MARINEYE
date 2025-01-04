@@ -99,7 +99,7 @@ namespace MARINEYE.Areas.Identity.Pages.Account
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [StringLength(100, ErrorMessage = "{0} musi mieć conajmniej {2} znak a maksymalnie {1} znaków.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "Hasło")]
             public string Password { get; set; }
@@ -110,7 +110,7 @@ namespace MARINEYE.Areas.Identity.Pages.Account
             /// </summary>
             [DataType(DataType.Password)]
             [Display(Name = "Potwiedzenie hasła")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Compare("Password", ErrorMessage = "Hasła się nie zgadzają")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -140,7 +140,7 @@ namespace MARINEYE.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("Użytkownik utworzony.");
 
                     if (isFirstOne) {
                         await _userManager.AddToRoleAsync(user, Constants.MainAdminRole);
@@ -158,8 +158,8 @@ namespace MARINEYE.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(Input.Email, "Potwierdź swój e-mail",
+                        $"Aby potwierdzić <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>kliknij tu</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {

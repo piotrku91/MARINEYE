@@ -5,13 +5,13 @@
 @inject UserManager<MARINEYEUser> UserManager
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista";
 }
 
-<h1>Index</h1>
+<h1>Lista</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Utwórz nową opłatę</a>
 </p>
 
 @if (TempData["Error"] != null)
@@ -60,9 +60,8 @@
                 @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
                 {
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
                     </td>
                 } else {
                     <td></td>

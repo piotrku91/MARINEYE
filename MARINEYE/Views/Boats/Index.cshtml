@@ -6,14 +6,14 @@
 @inject UserManager<MARINEYEUser> UserManager
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista";
 }
 
-<h1>Index</h1>
+<h1>Lista</h1>
 @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
             {
                 <p>
-                    <a asp-action="Create">Create New</a>
+                    <a asp-action="Create">Utwórz nową jednostkę</a>
                 </p>
             }
 

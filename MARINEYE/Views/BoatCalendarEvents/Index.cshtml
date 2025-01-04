@@ -2,13 +2,13 @@
 @model IEnumerable<MARINEYE.Models.BoatCalendarEvent>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista";
 }
 
-<h1>Index</h1>
+<h1>Rezerwacje / Wypożyczenia</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">Utwórz nową rezerwację</a>
 </p>
 
 @if (TempData["Error"] != null)
@@ -21,6 +21,9 @@
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.BeginDate)
             </th>
@@ -45,6 +48,9 @@
     <tbody>
         @foreach (var item in Model) {
             <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.BeginDate)
                 </td>

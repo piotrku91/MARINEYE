@@ -128,9 +128,43 @@ namespace MARINEYE.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool DueTransactionModelExists(int id)
-        {
-            return _context.ClubDueTransactions.Any(e => e.Id == id);
+        [Authorize(Roles = Constants.EditClubDuesRoles)]
+        public async Task<IActionResult> RollbackCharterDue(int? id) {
+            if (id == null) {
+                return NotFound();
+            }
+
+            var dueTransactionModel = await _context.CharterDueTransactions
+                .Include(d => d.BoatCalendarEvent)
+                .ThenInclude(be => be.User)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (dueTransactionModel == null) {
+                return NotFound();
+            }
+
+            return View(dueTransactionModel);
         }
+
+        // POST: DueTransactions/Delete/5
+        [Authorize(Roles = Constants.EditClubDuesRoles)]
+        [HttpPost, ActionName("RollbackCharterDue")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RollbackCharterDueConfirmed(int id) {
+            var dueTransactionModel = await _context.CharterDueTransactions
+               .Include(d => d.BoatCalendarEvent)
+               .ThenInclude(be => be.User)
+               .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (dueTransactionModel != null) {
+                var user = dueTransactionModel.BoatCalendarEvent.User;
+                user.Deposit(dueTransactionModel.AmountPaid);
+                _context.CharterDueTransactions.Remove(dueTransactionModel);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

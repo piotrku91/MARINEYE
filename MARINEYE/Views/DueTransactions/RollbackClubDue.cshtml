@@ -1,14 +1,14 @@
 ﻿@model MARINEYE.Models.ClubDueTransactionModel
 
 @{
-    ViewData["Title"] = "Rollback";
+    ViewData["Title"] = "Cofnij transakcję";
 }
 
-<h1>Delete</h1>
+<h1>Cofnij transakcję</h1>
 
 <h3>Czy napewno chcesz cofnąć transakcję?</h3>
 <div>
-    <h4>DueTransactionModel</h4>
+    <h4>Cofnij transakcję</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -22,6 +22,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ClubDue.Id)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ClubDue.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ClubDue.Description)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.AmountPaid)
@@ -40,6 +46,6 @@
     <form asp-action="RollbackClubDue">
         <input type="hidden" asp-for="Id" />
         <input type="submit" value="Cofnij" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index">Powrót do listy</a>
     </form>
 </div>
