@@ -9,7 +9,7 @@
 <br><br/>
 
 @if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
-<h1>SALDO KLUBOWE</h1>
+<h1>SALDO KLUBOWE W TRANSAKCJACH (NIE ZAMKNIĘTE)</h1>
 <p>@ViewData["ClubCash"] PLN </p>
 <br>
 <br />
@@ -51,6 +51,7 @@
                 <td>@transaction.ClubDue.Description</td>
                 <td>
                     <a asp-action="RollbackClubDue" asp-route-id="@transaction.Id">Cofnij</a>
+                    <a asp-action="CloseClubDue" asp-route-id="@transaction.Id">Zamknij |</a>
                 </td>
             </tr>
         }
@@ -79,7 +80,8 @@
                 <td>@transaction.PaymentDate</td>
                 <td>@transaction.BoatCalendarEventId</td>
                 <td>
-                    <a asp-action="RollbackCharterDue" asp-route-id="@transaction.Id">Cofnij</a>
+                    <a asp-action="RollbackCharterDue" asp-route-id="@transaction.Id">Cofnij |</a>
+                    <a asp-action="CloseCharterDue" asp-route-id="@transaction.Id">Zamknij |</a>
                 </td>
             </tr>
         }

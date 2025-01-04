@@ -22,13 +22,11 @@ public DbSet<MARINEYE.Models.BoatModel> BoatModel { get; set; } = default!;
 
 public DbSet<MARINEYE.Models.ClubDueModel> ClubDueModel { get; set; } = default!;
 
-public DbSet<ClubDueTransactionModel> ClubDueTransactions { get; set; }
+public DbSet<ClubDueTransactionModel> ClubDueTransactions { get; set; } = default!;
 
-public DbSet<CharterDueTransactionModel> CharterDueTransactions { get; set; }
+public DbSet<CharterDueTransactionModel> CharterDueTransactions { get; set; } = default!;
 
-public DbSet<ClubDueTransactionModel> ClosedClubDueTransactions { get; set; }
-
-public DbSet<CharterDueTransactionModel> ClosedCharterDueTransactions { get; set; }
+public DbSet<ClosedDueTransactionModel> ClosedDueTransactions { get; set; } = default!;
 
 public DbSet<MARINEYE.Models.BoatCalendarEvent> BoatCalendarEventModel { get; set; } = default!;
 }

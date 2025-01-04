@@ -1,0 +1,47 @@
+﻿@model List<ClosedDueTransactionModel>
+
+@{
+    ViewData["Title"] = "Listy";
+}
+
+<h1>SALDO KLUBOWE W TRANSAKCJACH (ZAMKNIĘTE)</h1>
+<p>@ViewData["ClosedClubCash"] PLN </p>
+<br>
+<br />
+
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<h1>Lista transakcji klubowiczów na konto klubu</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Full name</th>
+            <th>Amount paid</th>
+            <th>Payment date</th>
+            <th>Closed date</th>
+            <th>Description</th>
+            <th>Closer User Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var transaction in Model)
+        {
+            <tr>
+                <td>@transaction.FullName</td>
+                <td>@transaction.AmountPaid</td>
+                <td>@transaction.PaymentDate</td>
+                <td>@transaction.ClosedDate</td>
+                <td>@transaction.Description
+                <td>@transaction.CloserUserName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -37,7 +37,7 @@ namespace MARINEYE.Controllers
                 return false;
             }
 
-            if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
+            if (boatCalendarEvent.Boat.State == Utilities.BoatState.Naprawa) {
                 TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
                 return false;
             }
@@ -93,7 +93,7 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
 
-            if (boatCalendarEvent.Boat.State == Utilities.BoatState.Repair) {
+            if (boatCalendarEvent.Boat.State == Utilities.BoatState.Naprawa) {
                 TempData["Error"] = "Sprzęt aktualnie jest uszkodzony. Nie można stwierdzić czy w tym terminie będzie dostępny. Skontaktuj się z Bosmanem.";
                 return RedirectToAction(nameof(Index));
             }
@@ -109,7 +109,7 @@ namespace MARINEYE.Controllers
 
             var paid = true;
             foreach (var clubDueModel in clubDueModels) {
-                paid = paid && await _context.ClubDueTransactions
+                paid = paid && await _context.ClubDueTransactions.Where(dt => dt.Closed == false)
                     .AnyAsync(dt => dt.UserId == currentUser.Id && dt.ClubDueId == clubDueModel.Id && dt.AmountPaid >= clubDueModel.Amount);
             }
 

@@ -163,6 +163,7 @@ namespace MARINEYE.Controllers
 
             var clubDueModel = await _context.ClubDueModel
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (clubDueModel == null)
             {
                 return NotFound();
@@ -185,7 +186,7 @@ namespace MARINEYE.Controllers
 
             // Check if there are linked transactions
             var hasLinkedTransactions = await _context.ClubDueTransactions
-                .AnyAsync(dt => dt.ClubDueId == clubDueModel.Id);
+                .AnyAsync(dt => dt.ClubDueId == clubDueModel.Id && dt.Closed == false);
 
             if (hasLinkedTransactions) {
                 // Inform the user that the ClubDue cannot be deleted

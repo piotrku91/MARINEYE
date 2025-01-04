@@ -19,6 +19,8 @@ namespace MARINEYE.Models
         public virtual ClubDueModel ClubDue { get; set; }
         public int AmountPaid { get; set; }
         public DateTime PaymentDate { get; set; }
-        
+
+        public bool Closed { get; set; }
+
     }
 }

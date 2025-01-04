@@ -14,6 +14,7 @@ namespace MARINEYE.Models
         public virtual BoatCalendarEvent BoatCalendarEvent { get; set; }
         public int AmountPaid { get; set; }
         public DateTime PaymentDate { get; set; }
-        
+        public bool Closed { get; set; }
+
     }
 }

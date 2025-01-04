@@ -43,7 +43,7 @@ namespace MARINEYE.Controllers
                 return NotFound();
             }
 
-            boatModel.State = BoatState.Repair;
+            boatModel.State = BoatState.Naprawa;
 
             _context.Update(boatModel);
             await _context.SaveChangesAsync();
@@ -55,7 +55,7 @@ namespace MARINEYE.Controllers
         [Authorize(Roles = Constants.EditBoatListAccessRoles)]
         public IActionResult Create()
         {
-            BoatState defaultState = BoatState.Operational;
+            BoatState defaultState = BoatState.Sprawny;
             ViewData["State"] = new SelectList(BoatStateUtils.GetBoatStateAllStrings(), BoatStateUtils.GetBoatStateString(defaultState));
             return View();
         }

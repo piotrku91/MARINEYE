@@ -1,4 +1,5 @@
-﻿@using MARINEYE.Utilities
+﻿@using MARINEYE.Areas.Identity.Data
+@using MARINEYE.Utilities
 @model IEnumerable<MARINEYE.Models.BoatCalendarEvent>
 
 @{
@@ -70,11 +71,15 @@
                     @Html.DisplayFor(modelItem => item.EventState)
                 </td>
                 <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a> |
+                    @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edytuj |</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id"> Usuń |</a> 
+                    }
+                
                     @if (item.EventState != BoatCalendarEventState.Confirmed)
                     {
-                        <a asp-action="Confirm" asp-route-id="@item.Id">Potwierdź </a>
+                        <a asp-action="Confirm" asp-route-id="@item.Id">Potwierdź |</a>
                     }
             </td>
         </tr>

@@ -36,7 +36,8 @@ namespace MARINEYE.Utilities
                 BoatCalendarEvent = boatCalendarEvent,
                 BoatCalendarEventId = boatCalendarEvent.Id,
                 AmountPaid = totalCost,
-                PaymentDate = DateTime.Now
+                PaymentDate = DateTime.Now,
+                Closed = false
             };
 
             _context.CharterDueTransactions.Add(dueTransaction);
@@ -64,6 +65,7 @@ namespace MARINEYE.Utilities
                 ClubDueId = clubDueModel.Id,
                 AmountPaid = clubDueModel.Amount,
                 PaymentDate = DateTime.Now,
+                Closed = false
             };
 
             _context.ClubDueTransactions.Add(dueTransaction);

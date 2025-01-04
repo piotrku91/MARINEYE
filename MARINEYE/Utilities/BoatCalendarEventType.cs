@@ -8,11 +8,9 @@
 
     static public class BoatCalendarEventTypeUtils
     {
-        static private Dictionary<BoatCalendarEventType, string> _boatCalendarEventTypeDictionary = new Dictionary<BoatCalendarEventType, string>
-        {
-            { BoatCalendarEventType.Internal, "Klubowy" },
-            { BoatCalendarEventType.Charter, "Czarter" }
-        };
+        static private Dictionary<BoatCalendarEventType, string> _boatCalendarEventTypeDictionary = Enum.GetValues(typeof(BoatCalendarEventType))
+                              .Cast<BoatCalendarEventType>()
+                              .ToDictionary(state => state, state => state.ToString());
 
         static public string? GetBoatCalendarEventStateString(BoatCalendarEventType key) {
             if (!_boatCalendarEventTypeDictionary.ContainsKey(key)) {

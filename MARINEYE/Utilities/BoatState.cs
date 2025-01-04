@@ -2,19 +2,17 @@
 {
     public enum BoatState
     {
-        Operational,
-        Repair
+        Sprawny,
+        Naprawa
     }
 
-static public class BoatStateUtils
-{
-    static private Dictionary<BoatState, string> _boatStateDictionary = new Dictionary<BoatState, string>
+    static public class BoatStateUtils
     {
-        { BoatState.Operational, "Sprawny" },
-        { BoatState.Repair, "Naprawa" }
-    };
+        static private Dictionary<BoatState, string> _boatStateDictionary = Enum.GetValues(typeof(BoatState))
+                              .Cast<BoatState>()
+                              .ToDictionary(state => state, state => state.ToString());
 
-static public string? GetBoatStateString(BoatState key) {
+        static public string? GetBoatStateString(BoatState key) {
             if (!_boatStateDictionary.ContainsKey(key)) {
                 return null;
             }

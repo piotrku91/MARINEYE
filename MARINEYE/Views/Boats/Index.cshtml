@@ -85,7 +85,7 @@
                 <a asp-action="Report" asp-route-id="@item.Id">Zgłoś problem |</a>
                 <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
             </td>
-                } else if (User.Identity.IsAuthenticated && item.State != BoatState.Repair)
+                } else if (User.Identity.IsAuthenticated && item.State != BoatState.Naprawa)
                 {
                     <td>
                         <a asp-action="Report" asp-route-id="@item.Id">Zgłoś problem</a> 
