@@ -8,9 +8,11 @@
 
     static public class BoatCalendarEventStateUtils
     {
-        static private Dictionary<BoatCalendarEventState, string> _boatCalendarEventStateDictionary = Enum.GetValues(typeof(BoatCalendarEventState))
-                              .Cast<BoatCalendarEventState>()
-                              .ToDictionary(state => state, state => state.ToString());
+        static private Dictionary<BoatCalendarEventState, string> _boatCalendarEventStateDictionary = new Dictionary<BoatCalendarEventState, string>
+            {
+                { BoatCalendarEventState.Reserved, "Rezerwacja" },
+                { BoatCalendarEventState.Confirmed, "Potwierdzony" }
+            };
 
         static public string? GetBoatCalendarEventStateString(BoatCalendarEventState key) {
             if (!_boatCalendarEventStateDictionary.ContainsKey(key)) {

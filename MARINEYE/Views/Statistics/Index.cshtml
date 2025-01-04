@@ -1,0 +1,54 @@
+﻿@model Tuple<List<MARINEYE.Models.Statistics.MostUsedBoatDTO>, List<MARINEYE.Models.Statistics.MostUsedBoatDTO>>
+
+@{
+    ViewData["Title"] = "Statystyki";
+}
+
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+
+<h1>Największa liczba wypożyczeń (rezerwacje)</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nazwa łodzi</th>
+            <th>Liczba wypożyczeń</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var stats in Model.Item1)
+        {
+            <tr>
+                <td>@stats.Boat.Name</td>
+                <td>@stats.SumOfUseTimes</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h1>Sumaryczny okres wypożyczenia dla każdej łodzi</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nazwa łodzi</th>
+            <th>Liczba dni</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var stats in Model.Item2)
+        {
+            <tr>
+                <td>@stats.Boat.Name</td>
+                <td>@stats.SumOfUseTimes</td>
+            </tr>
+        }
+    </tbody>
+</table>

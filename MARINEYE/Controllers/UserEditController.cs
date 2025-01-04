@@ -21,14 +21,14 @@ namespace MARINEYE.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = Constants.MainAdminRole)]
+        [Authorize(Roles = Constants.UserListAccessRoles)]
         private async Task<string> FindRole(MARINEYEUser user) {
             var userRoles = await _userManager.GetRolesAsync(user);
             var availableRoles = Constants.Roles;
 
             // Ensure the user has only one role
             if (userRoles.Count != 1) {
-                throw new InvalidOperationException("User does not have exactly one role.");
+                throw new InvalidOperationException("Użytkownik nie ma dokładnie jednej roli");
             }
 
             // Get the single user role value
@@ -36,20 +36,20 @@ namespace MARINEYE.Controllers
 
             // Validate that the role exists in the availableRoles list
             if (!availableRoles.Contains(userRole)) {
-                throw new InvalidOperationException($"The role '{userRole}' is not found in the available roles.");
+                throw new InvalidOperationException($"Rola '{userRole}' nie znaleziona.");
             }
 
             return userRole;
         }
 
-        [Authorize(Roles = Constants.MainAdminRole)]
+        [Authorize(Roles = Constants.UserListAccessRoles)]
         private async Task<bool> SetRole(MARINEYEUser user, string newRole) {
             var userRoles = await _userManager.GetRolesAsync(user);
             var availableRoles = Constants.Roles;
 
             // Ensure the user has only one role
             if (userRoles.Count != 1) {
-                throw new InvalidOperationException("User does not have exactly one role.");
+                throw new InvalidOperationException("Użytkownik nie ma dokładnie jednej roli.");
             }
 
             // Get the single user role value
@@ -57,10 +57,22 @@ namespace MARINEYE.Controllers
 
             // Validate that the role exists in the availableRoles list
             if (!availableRoles.Contains(userRole) || !availableRoles.Contains(newRole)) {
-                throw new InvalidOperationException($"The role '{userRole}' is not found in the available roles.");
+                throw new InvalidOperationException($"Rola '{userRole}' nie znaleziona.");
             }
 
-            if (userRole != newRole && userRole != Constants.MainAdminRole) {
+            if (userRole != newRole) {
+                var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
+
+                if (currentUser != null && await FindRole(currentUser) != Constants.MainAdminRole) {
+                    if (newRole == Constants.MainAdminRole) {
+                        return true;
+                    }
+
+                    if (userRole == Constants.MainAdminRole && newRole != Constants.MainAdminRole) {
+                        return true;
+                    }
+                }
+
                 foreach (var role in userRoles) { // Remove all roles
                     await _userManager.RemoveFromRoleAsync(user, role);
                     }
@@ -96,12 +108,10 @@ namespace MARINEYE.Controllers
             })
             .ToListAsync();
 
-            // For each user, check if all their dues are paid
+            
             foreach (var userWithRole in usersWithRoles) {
-                // Get all the dues for the user, whether paid or not
                 var userDues = await _context.ClubDueModel.ToListAsync();
 
-                // Check if the user has paid all dues
                 bool allPaid = true;
 
                 foreach (var due in userDues) {

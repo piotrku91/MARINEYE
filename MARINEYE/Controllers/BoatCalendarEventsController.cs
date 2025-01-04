@@ -261,6 +261,9 @@ namespace MARINEYE.Controllers
             bool isEventStared = await _context.BoatCalendarEventModel
                 .AnyAsync(e => e.BoatId == id && e.BeginDate <= DateTime.Now && e.EndDate <= DateTime.Now);
 
+            var hasTransactions = await _context.CharterDueTransactions
+            .AnyAsync(t => t.BoatCalendarEventId == id);
+
 
             var userId = User.Identity.Name;
 
@@ -268,6 +271,11 @@ namespace MARINEYE.Controllers
 
                 if (isEventStared) {
                     TempData["Error"] = "Nie można usunąć. Wydarzenie już się rozpoczęło";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (hasTransactions) {
+                    TempData["Error"] = "Nie można usunąć. Cofnij powiązanie transakcję (czarter) i spróbuj ponownie";
                     return RedirectToAction(nameof(Index));
                 }
 
