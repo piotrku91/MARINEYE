@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MARINEYE.Migrations
 {
     /// <inheritdoc />
-    public partial class Clear : Migration
+    public partial class ClearInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

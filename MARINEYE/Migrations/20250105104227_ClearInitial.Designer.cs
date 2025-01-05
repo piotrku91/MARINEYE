@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MARINEYE.Migrations
 {
     [DbContext(typeof(MARINEYEContext))]
-    [Migration("20250105102152_Clear")]
-    partial class Clear
+    [Migration("20250105104227_ClearInitial")]
+    partial class ClearInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
