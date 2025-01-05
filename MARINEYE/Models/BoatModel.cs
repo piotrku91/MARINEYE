@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MARINEYE.Models
 {
-
     public class BoatModel
     {
         public int Id { get; set; }
