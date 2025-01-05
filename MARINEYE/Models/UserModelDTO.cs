@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using MARINEYE.Migrations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MARINEYE.Models
 {
@@ -11,7 +12,7 @@ namespace MARINEYE.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Role { get; set; }
-
+        public DateTime RegistrationDate { get; set; }
         public bool AllDuesPaid { get; set; }
 
     }

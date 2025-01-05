@@ -37,7 +37,7 @@ namespace MARINEYE.Controllers
             }
 
             // Retrieve all ClubDueModel records
-            var clubDueModels = await _context.ClubDueModel.ToListAsync();
+            var clubDueModels = await _context.ClubDueModel.Where(m => m.PeriodBegin >= currentUser.RegistrationDate).ToListAsync();
 
             // For each ClubDueModel, check if the user has already paid
             foreach (var clubDueModel in clubDueModels) {
@@ -60,8 +60,6 @@ namespace MARINEYE.Controllers
         }
 
         // POST: ClubDues/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,PeriodBegin,PeriodEnd,Description,Amount")] ClubDueModel clubDueModel)
@@ -200,7 +198,6 @@ namespace MARINEYE.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
 
         private bool ClubDueModelExists(int id)
         {

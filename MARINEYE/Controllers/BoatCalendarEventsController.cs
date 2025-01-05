@@ -81,15 +81,11 @@ namespace MARINEYE.Controllers
             }
 
             var boatCalendarEvent = await _context.BoatCalendarEventModel
-                .FirstOrDefaultAsync(m => m.Id == id);
+            .Include(be => be.Boat)
+            .Include(be => be.User)
+            .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (boatCalendarEvent == null) {
-                return NotFound();
-            }
-
-            boatCalendarEvent.Boat = _context.BoatModel.FirstOrDefault(b => b.Id == boatCalendarEvent.BoatId);
-
-            if (boatCalendarEvent.Boat == null) {
+            if (boatCalendarEvent == null || boatCalendarEvent.Boat == null || boatCalendarEvent.User == null) {
                 return NotFound();
             }
 
@@ -104,8 +100,8 @@ namespace MARINEYE.Controllers
                 return Unauthorized();
             }
 
-
-            var clubDueModels = await _context.ClubDueModel.ToListAsync();
+            
+            var clubDueModels = await _context.ClubDueModel.Where(m => m.PeriodBegin >= boatCalendarEvent.User.RegistrationDate).ToListAsync();
 
             var paid = true;
             foreach (var clubDueModel in clubDueModels) {

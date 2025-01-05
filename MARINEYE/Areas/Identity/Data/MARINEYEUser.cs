@@ -17,6 +17,8 @@ public class MARINEYEUser : IdentityUser
     [PersonalData]
     public DateTime DOB { get; set; }
 
+    public DateTime RegistrationDate { get; set; }
+
     // Personal account operations
     [PersonalData]
     public int CashAmount { get; set; }

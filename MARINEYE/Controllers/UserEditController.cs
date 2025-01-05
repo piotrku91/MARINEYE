@@ -104,13 +104,14 @@ namespace MARINEYE.Controllers
             Email = userWithRole.user.Email,
             FirstName = userWithRole.user.FirstName,
             LastName = userWithRole.user.LastName,
-            Role = role.Name 
+            Role = role.Name,
+            RegistrationDate = userWithRole.user.RegistrationDate
             })
             .ToListAsync();
 
             
             foreach (var userWithRole in usersWithRoles) {
-                var userDues = await _context.ClubDueModel.ToListAsync();
+                var userDues = await _context.ClubDueModel.Where(d => d.PeriodBegin >= userWithRole.RegistrationDate).ToListAsync();
 
                 bool allPaid = true;
 
