@@ -257,7 +257,7 @@ namespace MARINEYE.Controllers
                 .AnyAsync(e => e.BoatId == id && e.BeginDate <= DateTime.Now && e.EndDate <= DateTime.Now);
 
             var hasTransactions = await _context.CharterDueTransactions
-            .AnyAsync(t => t.BoatCalendarEventId == id);
+            .AnyAsync(t => t.BoatCalendarEventId == id && t.Closed == false);
 
 
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);

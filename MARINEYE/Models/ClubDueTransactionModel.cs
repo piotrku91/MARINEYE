@@ -26,7 +26,6 @@ namespace MARINEYE.Models
 
         [Display(Name = "Data płatności")]
         public DateTime PaymentDate { get; set; }
-
         public bool Closed { get; set; }
 
     }
