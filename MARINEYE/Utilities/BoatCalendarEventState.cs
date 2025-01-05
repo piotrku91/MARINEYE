@@ -2,8 +2,8 @@
 {
     public enum BoatCalendarEventState
     {
-        Reserved,
-        Confirmed
+        Zarezerowana,
+        Potwierdzona
     }
 
     static public class BoatCalendarEventStateUtils

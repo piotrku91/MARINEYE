@@ -76,7 +76,7 @@
                         <a asp-action="Edit" asp-route-id="@item.Id">Edytuj |</a>
                         <a asp-action="Delete" asp-route-id="@item.Id"> Usuń |</a>
 
-                        @if (item.EventState != BoatCalendarEventState.Confirmed)
+                        @if (item.EventState != BoatCalendarEventState.Potwierdzona)
                         {
                             <a asp-action="Confirm" asp-route-id="@item.Id">Potwierdź |</a>
                         }

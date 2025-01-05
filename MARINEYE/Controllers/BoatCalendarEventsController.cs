@@ -114,7 +114,7 @@ namespace MARINEYE.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Confirmed;
+            boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Potwierdzona;
             _context.Update(boatCalendarEvent);
             await _context.SaveChangesAsync();
 
@@ -137,14 +137,14 @@ namespace MARINEYE.Controllers
                 var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
                 boatCalendarEvent.UserId = currentUser.Id;
                 boatCalendarEvent.User = currentUser;
-                boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Reserved;
+                boatCalendarEvent.EventState = Utilities.BoatCalendarEventState.Zarezerowana;
 
                 if (!await ValidateEvent(boatCalendarEvent)) {
                     return RedirectToAction(nameof(Index));
                 };
 
                 if (User.IsInRole("Klient")) {
-                    boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Charter;
+                    boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Czarter;
                     var result = await _transactions.PayForCharter(boatCalendarEvent, currentUser);
 
                     if (!result.success) {
@@ -152,7 +152,7 @@ namespace MARINEYE.Controllers
                         return RedirectToAction(nameof(Index));
                     }
                 } else {
-                    boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Internal;
+                    boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Klubowa;
                 }
 
                 // Dodanie nowej rezerwacji, jeśli termin jest wolny

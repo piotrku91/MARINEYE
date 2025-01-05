@@ -2,8 +2,8 @@
 {
     public enum BoatCalendarEventType
     {
-        Internal,
-        Charter
+        Klubowa,
+        Czarter
     }
 
     static public class BoatCalendarEventTypeUtils
