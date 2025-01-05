@@ -64,6 +64,8 @@
     </table>
 }
 
+@if (!User.IsInRole("Członek"))
+{
 <h1>Lista transakcji czarterów na konto klubu</h1>
 
 <table class="table">
@@ -97,3 +99,4 @@
         }
     </tbody>
 </table>
+}

@@ -43,7 +43,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.EventState)
             </th>
-            <th></th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -74,12 +74,12 @@
                     @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id">Edytuj |</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id"> Usuń |</a> 
-                    }
-                
-                    @if (item.EventState != BoatCalendarEventState.Confirmed)
-                    {
-                        <a asp-action="Confirm" asp-route-id="@item.Id">Potwierdź |</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id"> Usuń |</a>
+
+                        @if (item.EventState != BoatCalendarEventState.Confirmed)
+                        {
+                            <a asp-action="Confirm" asp-route-id="@item.Id">Potwierdź |</a>
+                        }
                     }
             </td>
         </tr>

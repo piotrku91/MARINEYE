@@ -41,7 +41,6 @@ public class MARINEYEUser : IdentityUser
         CashAmount -= amount;
         return true;
     }
-
     public int GetCashAmount() {
         return CashAmount;
     }

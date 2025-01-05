@@ -47,7 +47,7 @@
                         @if (User.IsInRole("Admin") || User.IsInRole("Bosman"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="UserEdit" asp-action="Index">Użytkownicy</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Użytkownicy</a>
                             </li>
                         }
                         @if (User.Identity.IsAuthenticated)

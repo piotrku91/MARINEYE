@@ -11,11 +11,11 @@
 
 <h1>Lista</h1>
 @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
-            {
-                <p>
-                    <a asp-action="Create">Utwórz nową jednostkę</a>
-                </p>
-            }
+{
+    <p>
+        <a asp-action="Create">Utwórz nową jednostkę</a>
+    </p>
+}
 
 @if (TempData["Error"] != null)
 {
@@ -50,9 +50,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.OneDayCharterCost)
             </th>
-            @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
+            @if (User.Identity.IsAuthenticated)
             {
                 <th>Akcje</th>
+            } else {
+                <th></th>
             }
         </tr>
     </thead>

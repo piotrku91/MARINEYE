@@ -7,7 +7,7 @@ namespace MARINEYE.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Nazwa")]
+        [Display(Name = "Nazwa jednostki")]
         public string Name { get; set; }
         [Display(Name = "Opis")]
         public string Description { get; set; }
@@ -18,7 +18,7 @@ namespace MARINEYE.Models
         [Range(1900, 3000, ErrorMessage = "Rok produkcji musi być w zakresie od 1900 do 3000")]
         public int Year { get; set; }
 
-        [Display(Name = "Klasa łodzi")]
+        [Display(Name = "Klasa jednostki")]
         public string Class { get; set; }
 
         [Display(Name = "Stan")]

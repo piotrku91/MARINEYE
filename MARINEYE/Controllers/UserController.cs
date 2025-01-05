@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MARINEYE.Controllers
 {
-    public class UserEditController : Controller
+    public class UserController : Controller
     {
         private readonly MARINEYEContext _context;
         private readonly UserManager<MARINEYEUser> _userManager;
 
-        public UserEditController(MARINEYEContext context, UserManager<MARINEYEUser> userManager)
+        public UserController(MARINEYEContext context, UserManager<MARINEYEUser> userManager)
         {
             _context = context;
             _userManager = userManager;
