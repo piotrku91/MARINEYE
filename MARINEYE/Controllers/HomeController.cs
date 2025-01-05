@@ -19,7 +19,7 @@ namespace MARINEYE.Controllers
             return View();
         }
 
-        [Authorize (Roles = "Extern")]
+        [Authorize (Roles = "Klient")]
         public IActionResult Privacy()
         {
             return View();

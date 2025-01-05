@@ -76,6 +76,9 @@ namespace MARINEYE.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -143,6 +146,10 @@ namespace MARINEYE.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Class")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -186,6 +193,9 @@ namespace MARINEYE.Migrations
                     b.Property<int>("BoatCalendarEventId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("Closed")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
@@ -194,6 +204,40 @@ namespace MARINEYE.Migrations
                     b.HasIndex("BoatCalendarEventId");
 
                     b.ToTable("CharterDueTransactions");
+                });
+
+            modelBuilder.Entity("MARINEYE.Models.ClosedDueTransactionModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AmountPaid")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ClosedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CloserUserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ClosedDueTransactions");
                 });
 
             modelBuilder.Entity("MARINEYE.Models.ClubDueModel", b =>
@@ -231,6 +275,9 @@ namespace MARINEYE.Migrations
 
                     b.Property<int>("AmountPaid")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Closed")
+                        .HasColumnType("bit");
 
                     b.Property<int>("ClubDueId")
                         .HasColumnType("int");

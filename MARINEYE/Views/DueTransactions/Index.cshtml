@@ -8,11 +8,11 @@
 <p>@ViewData["Cash"] PLN [<a asp-action="TopUpAccount">+ Zasil konto]</a></p>
 <br><br/>
 
-@if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
-<h1>SALDO KLUBOWE W TRANSAKCJACH (NIE ZAMKNIĘTE)</h1>
-<p>@ViewData["ClubCash"] PLN </p>
-<br>
-<br />
+@if (User.IsInRole("Admin") || User.IsInRole("Bosman")) {
+    <h1>SALDO KLUBOWE W TRANSAKCJACH (NIE ZAMKNIĘTE)</h1>
+    <p>@ViewData["ClubCash"] PLN </p>
+    <br>
+    <br />
 }
 
 @if (TempData["Error"] != null)
@@ -23,40 +23,45 @@
 }
 
 
-@if (!User.IsInRole("Extern"))
+@if (!User.IsInRole("Klient"))
 {
-<h1>Lista transakcji klubowiczów na konto klubu</h1>
+    <h1>Lista transakcji klubowiczów na konto klubu</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>User Name</th>
-            <th>Club Due ID</th>
-            <th>Due Amount</th>
-            <th>Amount Paid</th>
-            <th>Payment Date</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var transaction in Model.Item1)
-        {
+    <table class="table">
+        <thead>
             <tr>
-                <td>@transaction.User.FirstName @transaction.User.LastName</td>
-                <td>@transaction.ClubDueId</td>
-                <td>@transaction.ClubDue.Amount</td>
-                <td>@transaction.AmountPaid</td>
-                <td>@transaction.PaymentDate.ToString("yyyy-MM-dd")</td>
-                <td>@transaction.ClubDue.Description</td>
-                <td>
-                    <a asp-action="RollbackClubDue" asp-route-id="@transaction.Id">Cofnij</a>
-                    <a asp-action="CloseClubDue" asp-route-id="@transaction.Id">Zamknij |</a>
-                </td>
+                <th>@Html.DisplayNameFor(model => model.Item1.FirstOrDefault().User.FirstName) / @Html.DisplayNameFor(model => model.Item1.FirstOrDefault().User.LastName)</th>
+                <th>@Html.DisplayNameFor(model => model.Item1.FirstOrDefault().ClubDueId)</th>
+                <th>@Html.DisplayNameFor(model => model.Item1.FirstOrDefault().ClubDue.Amount)</th>
+                <th>@Html.DisplayNameFor(model => model.Item1.FirstOrDefault().AmountPaid)</th>
+                <th>@Html.DisplayNameFor(model => model.Item1.FirstOrDefault().PaymentDate)</th>
+                <th>@Html.DisplayNameFor(model => model.Item1.FirstOrDefault().ClubDue.Description)</th>
+                <th>Akcje</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var transaction in Model.Item1)
+            {
+                <tr>
+                    <td>@transaction.User.FirstName @transaction.User.LastName</td>
+                    <td>@transaction.ClubDueId</td>
+                    <td>@transaction.ClubDue.Amount</td>
+                    <td>@transaction.AmountPaid</td>
+                    <td>@transaction.PaymentDate.ToString("yyyy-MM-dd")</td>
+                    <td>@transaction.ClubDue.Description</td>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Bosman"))
+                    {
+                        <td>
+                            <a asp-action="RollbackClubDue" asp-route-id="@transaction.Id">Cofnij</a>
+                        <a asp-action="CloseClubDue" asp-route-id="@transaction.Id">Zamknij |</a>
+                    </td>
+                    } else {
+                        <td></td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 <h1>Lista transakcji czarterów na konto klubu</h1>
@@ -64,11 +69,11 @@
 <table class="table">
     <thead>
         <tr>
-            <th>User Name</th>
-            <th>Amount Paid</th>
-            <th>Payment Date</th>
-            <th>Event</th>
-            <th>Actions</th>
+            <th>@Html.DisplayNameFor(model => model.Item2.FirstOrDefault().BoatCalendarEvent.User.FirstName) / @Html.DisplayNameFor(model => model.Item2.FirstOrDefault().BoatCalendarEvent.User.LastName)</th>
+            <th>@Html.DisplayNameFor(model => model.Item2.FirstOrDefault().BoatCalendarEventId)</th>
+            <th>@Html.DisplayNameFor(model => model.Item2.FirstOrDefault().AmountPaid)</th>
+            <th>@Html.DisplayNameFor(model => model.Item2.FirstOrDefault().PaymentDate)</th>
+            <th>Akcje</th>
         </tr>
     </thead>
     <tbody>
@@ -76,13 +81,18 @@
         {
             <tr>
                 <td>@transaction.BoatCalendarEvent.User.FirstName @transaction.BoatCalendarEvent.User.LastName</td>
+                <td>@transaction.BoatCalendarEventId</td>
                 <td>@transaction.AmountPaid</td>
                 <td>@transaction.PaymentDate</td>
-                <td>@transaction.BoatCalendarEventId</td>
-                <td>
-                    <a asp-action="RollbackCharterDue" asp-route-id="@transaction.Id">Cofnij |</a>
+                @if (User.IsInRole("Admin") || User.IsInRole("Bosman"))
+                {
+                    <td>
+                        <a asp-action="RollbackCharterDue" asp-route-id="@transaction.Id">Cofnij |</a>
                     <a asp-action="CloseCharterDue" asp-route-id="@transaction.Id">Zamknij |</a>
                 </td>
+                } else {
+                    <td></td>
+                }
             </tr>
         }
     </tbody>

@@ -10,7 +10,7 @@
 }
 
 <h1>Lista</h1>
-@if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+@if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
             {
                 <p>
                     <a asp-action="Create">Utwórz nową jednostkę</a>
@@ -39,6 +39,9 @@
                 @Html.DisplayNameFor(model => model.Year)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Class)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.State)
             </th>
             <th>
@@ -47,9 +50,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.OneDayCharterCost)
             </th>
-            @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+            @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
             {
-                <th>Actions</th>
+                <th>Akcje</th>
             }
         </tr>
     </thead>
@@ -69,6 +72,9 @@
                 @Html.DisplayFor(modelItem => item.Year)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Class)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.State)
             </td>
             <td>
@@ -78,7 +84,7 @@
                     @Html.DisplayFor(modelItem => item.OneDayCharterCost)
                 </td>
 
-                @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
                 {
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |

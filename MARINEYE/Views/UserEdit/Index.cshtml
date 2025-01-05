@@ -16,11 +16,11 @@
             <th>@Html.DisplayNameFor(model => model.Role)</th>
              @if (User.IsInRole(Constants.MainAdminRole))
                 {
-            <th>Actions</th>
+            <th>Akcje</th>
                 } else {
                     <th></th>
                 }
-                <th></th>
+                <th>Status opłat</th>
                
         </tr>
     </thead>
@@ -35,13 +35,13 @@
                 @if (User.IsInRole(Constants.MainAdminRole))
                 {
                     <td>
-                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-warning btn-sm">Edytuj</a>
                     </td>
                 } else {
                     <td></td>
                 }
 
-                @if (user.Role == "Extern")
+                @if (user.Role == "Klient")
                 {
                     <td>
                         <span class="badge bg-info">NIE DOTYCZY</span>

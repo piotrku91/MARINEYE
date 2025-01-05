@@ -3,11 +3,11 @@
     public static class Constants
     {
         public const string MainAdminRole = "Admin";
-        public const string DefaultRole = "Extern";
-        public const string UserListAccessRoles = Constants.MainAdminRole + "," + "Boatswain";
-        public const string EditBoatListAccessRoles = Constants.MainAdminRole + "," + "Boatswain";
-        public const string EditClubDuesRoles = Constants.MainAdminRole + "," + "Boatswain";
+        public const string DefaultRole = "Klient";
+        public const string UserListAccessRoles = Constants.MainAdminRole + "," + "Bosman";
+        public const string EditBoatListAccessRoles = Constants.MainAdminRole + "," + "Bosman";
+        public const string EditClubDuesRoles = Constants.MainAdminRole + "," + "Bosman";
 
-        public readonly static List<string> Roles = new List<string> { MainAdminRole, "Boatswain", "Member", DefaultRole };
+        public readonly static List<string> Roles = new List<string> { MainAdminRole, "Bosman", "Członek", DefaultRole };
     }
 }

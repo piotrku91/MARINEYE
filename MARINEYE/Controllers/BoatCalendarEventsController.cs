@@ -143,7 +143,7 @@ namespace MARINEYE.Controllers
                     return RedirectToAction(nameof(Index));
                 };
 
-                if (User.IsInRole("Extern")) {
+                if (User.IsInRole("Klient")) {
                     boatCalendarEvent.EventType = Utilities.BoatCalendarEventType.Charter;
                     var result = await _transactions.PayForCharter(boatCalendarEvent, currentUser);
 
@@ -262,7 +262,7 @@ namespace MARINEYE.Controllers
 
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
 
-            if (boatCalendarEvent.UserId == currentUser.Id || User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
+            if (boatCalendarEvent.UserId == currentUser.Id || User.IsInRole("Admin") || User.IsInRole("Bosman")) {
 
                 if (isEventStared) {
                     TempData["Error"] = "Nie można usunąć. Wydarzenie już się rozpoczęło";

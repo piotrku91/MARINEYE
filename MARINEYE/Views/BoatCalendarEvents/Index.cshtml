@@ -32,7 +32,7 @@
                 @Html.DisplayNameFor(model => model.EndDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User.FirstName) / @Html.DisplayNameFor(model => model.User.FirstName)
+                @Html.DisplayNameFor(model => model.User.FirstName) / @Html.DisplayNameFor(model => model.User.LastName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Boat.Name)
@@ -71,7 +71,7 @@
                     @Html.DisplayFor(modelItem => item.EventState)
                 </td>
                 <td>
-                    @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                    @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
                     {
                         <a asp-action="Edit" asp-route-id="@item.Id">Edytuj |</a>
                         <a asp-action="Delete" asp-route-id="@item.Id"> Usuń |</a> 

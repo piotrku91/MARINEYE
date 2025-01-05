@@ -37,8 +37,8 @@
                 @Html.DisplayNameFor(model => model.Amount)
             </th>
            
-            <th>Actions</th>
-            <th>PaymentStatus</th>
+            <th>Akcje</th>
+            <th>Status</th>
             
         </tr>
     </thead>
@@ -57,7 +57,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Amount)
             </td>
-                @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Boatswain"))
+                @if (User.IsInRole(Constants.MainAdminRole) || User.IsInRole("Bosman"))
                 {
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |

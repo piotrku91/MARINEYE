@@ -28,7 +28,7 @@ namespace MARINEYE.Controllers
             return View(closedTransactions);
         }
         private async Task<IActionResult> ViewAllDues() {
-            if (User.IsInRole("Admin") || User.IsInRole("Boatswain")) {
+            if (User.IsInRole("Admin") || User.IsInRole("Bosman")) {
                 var clubTransactions = await _context.ClubDueTransactions
                     .Include(t => t.ClubDue)
                     .Where(t => t.Closed == false)
@@ -215,7 +215,6 @@ namespace MARINEYE.Controllers
                 closedModel.PaymentDate = dueTransactionModel.PaymentDate;
                 closedModel.ClosedDate = DateTime.Now;
                 closedModel.Description = "TRANSAKCJA KLUBOWA -> Id: " + dueTransactionModel.ClubDue.Id + " | " + dueTransactionModel.ClubDue.Description;
-                closedModel.UserName = dueTransactionModel.User.UserName;
                 closedModel.FullName = dueTransactionModel.User.FirstName + " " + dueTransactionModel.User.LastName;
                 closedModel.CloserUserName = User.Identity.Name;
 
@@ -270,7 +269,6 @@ namespace MARINEYE.Controllers
                     + " | " 
                     + dueTransactionModel.BoatCalendarEvent.BeginDate 
                     + "/" + dueTransactionModel.BoatCalendarEvent.EndDate;
-                closedModel.UserName = dueTransactionModel.BoatCalendarEvent.User.UserName;
                 closedModel.FullName = dueTransactionModel.BoatCalendarEvent.User.FirstName + " " + dueTransactionModel.BoatCalendarEvent.User.LastName;
                 closedModel.CloserUserName = User.Identity.Name;
 

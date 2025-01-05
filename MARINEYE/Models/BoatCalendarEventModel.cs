@@ -7,12 +7,15 @@ namespace MARINEYE.Models
 {
     public class BoatCalendarEvent
     {
+        [Display(Name = "Identyfikator")]
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Data rozpoczęcia")]
         public DateTime BeginDate { get; set; }
 
         [Required]
+        [Display(Name = "Data zakończenia")]
         public DateTime EndDate { get; set; }
 
         public string UserId { get; set; }
@@ -26,8 +29,10 @@ namespace MARINEYE.Models
         [ForeignKey("BoatId")]
         public virtual BoatModel Boat { get; set; }
 
+        [Display(Name = "Status")]
         public BoatCalendarEventState EventState { get; set; }
 
+        [Display(Name = "Typ")]
         public BoatCalendarEventType EventType { get; set; }
     }
 }

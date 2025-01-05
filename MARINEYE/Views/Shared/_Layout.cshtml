@@ -37,14 +37,14 @@
                             </li>
                         }
 
-                        @if (User.Identity.IsAuthenticated && !User.IsInRole("Extern"))
+                        @if (User.Identity.IsAuthenticated && !User.IsInRole("Klient"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="ClubDues" asp-action="Index">Opłaty członkowskie</a>
                             </li>
                         }
 
-                        @if (User.IsInRole("Admin") || User.IsInRole("Boatswain"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("Bosman"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="UserEdit" asp-action="Index">Użytkownicy</a>
@@ -59,7 +59,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Statistics" asp-action="Index">Statystyki</a>
                             </li>
                         }    
-                        @if (User.IsInRole("Admin") || User.IsInRole("Boatswain"))
+                        @if (User.IsInRole("Admin") || User.IsInRole("Bosman"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="DueTransactions" asp-action="IndexClosed">Historia transakcji</a>
