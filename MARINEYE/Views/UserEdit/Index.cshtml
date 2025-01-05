@@ -35,7 +35,7 @@
                 @if (User.IsInRole(Constants.MainAdminRole))
                 {
                     <td>
-                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-warning btn-sm">Edytuj</a>
+                        <a asp-action="Edit" asp-route-id="@user.Id">Edytuj</a>
                     </td>
                 } else {
                     <td></td>
